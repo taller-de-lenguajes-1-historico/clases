@@ -1,0 +1,19 @@
+# --- .NET ---
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# --- macOS ---
+.DS_Store
+
+# --- Editores ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+.idea/
+
+# --- Logs / temporales ---
+*.log

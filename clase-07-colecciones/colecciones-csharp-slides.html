@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Colecciones en C# — Clase Nro 7</title>
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --panel: #ffffff;
+    --panel-2: #eef0f5;
+    --border: #d9dee8;
+    --text: #1b2230;
+    --muted: #5a6576;
+    --accent: #7c3aed;
+    --accent-2: #2563eb;
+    --green: #15803d;
+    --red: #dc2626;
+    --yellow: #b45309;
+    --code-bg: #0f1320;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .deck {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    inset: 0;
+    padding: 56px 72px 80px 72px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: auto;
+  }
+  .slide.active { display: flex; }
+
+  .slide-eyebrow {
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  h1.title {
+    font-size: 64px;
+    line-height: 1.05;
+    margin: 0 0 16px 0;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  h1.title .accent { color: var(--accent); }
+
+  h2.slide-title {
+    font-size: 38px;
+    line-height: 1.1;
+    margin: 0 0 22px 0;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 21px;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  ul.bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.55;
+  }
+  ul.bullets li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  ul.bullets li::before {
+    content: "→";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 8px;
+  }
+  .columns.three { grid-template-columns: 1fr 1fr 1fr; }
+  .columns.four  { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(20,30,55,0.05), 0 8px 24px rgba(20,30,55,0.04);
+  }
+  .card h3 {
+    margin: 0 0 10px 0;
+    font-size: 19px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .card p, .card li { font-size: 16px; color: var(--text); line-height: 1.55; }
+  .card ul { padding-left: 20px; margin: 0; }
+
+  .imgcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .imgcard img { max-width: 100%; max-height: 100%; height: auto; border-radius: 8px; display: block; }
+  .imgcaption { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center; line-height: 1.4; }
+
+  pre.code {
+    background: var(--code-bg);
+    border: 1px solid #1f2638;
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #d6deeb;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow: auto;
+    margin: 8px 0;
+  }
+  pre.code .c { color: #7f8aa3; }
+  pre.code .k { color: #c4a7ff; }
+  pre.code .s { color: #9ece6a; }
+  pre.code .t { color: #79b8ff; }
+  pre.code .n { color: #f2cc60; }
+
+  table.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 17px;
+    box-shadow: 0 1px 3px rgba(20,30,55,0.05), 0 8px 24px rgba(20,30,55,0.04);
+  }
+  table.tbl th, table.tbl td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.tbl th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+  table.tbl tr:last-child td { border-bottom: none; }
+  table.tbl code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 14px; }
+
+  .callout {
+    margin-top: 14px;
+    background: rgba(124,58,237,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 17px;
+  }
+  .callout code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+
+  .small-note {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 12px;
+    line-height: 1.55;
+  }
+  .small-note code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+
+  .pager {
+    position: fixed;
+    bottom: 18px; right: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    user-select: none;
+  }
+  .brand {
+    position: fixed;
+    bottom: 18px; left: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+  .brand b { color: var(--accent); }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+    z-index: 10;
+  }
+
+  .slide.title-slide {
+    justify-content: center;
+    background: radial-gradient(ellipse at top left, rgba(124,58,237,0.12), transparent 55%),
+                radial-gradient(ellipse at bottom right, rgba(37,99,235,0.10), transparent 55%),
+                var(--bg);
+  }
+
+  .title-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .title-photo {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(20,30,55,0.18);
+  }
+  .title-photo img { width: 100%; height: auto; display: block; }
+
+  .two-col-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .col h4 {
+    margin: 0 0 10px 0;
+    color: var(--accent);
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr 28px 1fr;
+    gap: 14px;
+    align-items: stretch;
+    margin-top: 18px;
+  }
+  .flow .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .pill {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    background: var(--panel-2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  ul.bullets li code, .card code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+
+  .kbd {
+    display: inline-block;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 8px;
+    color: var(--text);
+  }
+
+  /* Exportar a PDF / imprimir */
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: var(--bg); }
+    .deck {
+      position: static;
+      width: 1280px;
+      height: auto;
+      overflow: visible;
+    }
+    .slide {
+      display: flex !important;
+      position: relative !important;
+      inset: auto !important;
+      width: 1280px;
+      height: 720px;
+      page-break-after: always;
+      break-after: page;
+      overflow: hidden;
+    }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    .progress, .pager, .brand { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1. Título -->
+  <section class="slide title-slide active">
+    <div class="title-grid">
+      <div>
+        <div class="slide-eyebrow">Clase Nro 7</div>
+        <h1 class="title">Colecciones en <span class="accent">C#</span></h1>
+        <p class="subtitle">Trabajar con un grupo de objetos: arreglos, tipos genéricos, colecciones y enum.</p>
+        <div class="columns" style="margin-top: 22px; gap: 14px;">
+          <div class="card" style="padding:14px 18px;"><h3 style="font-size:16px;margin:0 0 4px;">Arreglos</h3><p style="font-size:14px;">Grupo fijo, fuertemente tipado.</p></div>
+          <div class="card" style="padding:14px 18px;"><h3 style="font-size:16px;margin:0 0 4px;">Genéricos</h3><p style="font-size:14px;">Contenedor para un tipo parametrizable.</p></div>
+          <div class="card" style="padding:14px 18px;"><h3 style="font-size:16px;margin:0 0 4px;">Colecciones</h3><p style="font-size:14px;">Grupos de tamaño dinámico.</p></div>
+          <div class="card" style="padding:14px 18px;"><h3 style="font-size:16px;margin:0 0 4px;">Enum</h3><p style="font-size:14px;">Listas de constantes con nombre.</p></div>
+        </div>
+      </div>
+      <div class="title-photo">
+        <img src="img/image1.jpeg" alt="Programación: laptop con código y apuntes" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Trabajando con grupos de datos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Introducción</div>
+    <h2 class="slide-title">Trabajando con grupos de datos</h2>
+    <p class="subtitle">En muchas aplicaciones es necesario crear y administrar grupos de objetos relacionados. En C# hay dos formas de agruparlos.</p>
+    <div class="columns" style="margin-top: 18px;">
+      <div class="card">
+        <h3>Arreglos</h3>
+        <p>Útiles para crear y trabajar con un <b>número fijo</b> de objetos fuertemente tipados.</p>
+        <p style="margin-top: 10px;">El tamaño se define al crear la instancia y permanece constante durante toda su vida útil.</p>
+        <span class="pill">tamaño fijo</span>
+      </div>
+      <div class="card">
+        <h3>Colecciones</h3>
+        <p>El grupo de objetos puede <b>crecer y reducirse dinámicamente</b> en tiempo de ejecución.</p>
+        <p style="margin-top: 10px;">Más flexibles: se adaptan a las necesidades cambiantes de la aplicación.</p>
+        <span class="pill">tamaño dinámico</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Arreglos — qué es (con imagen) -->
+  <section class="slide">
+    <div class="slide-eyebrow">Arreglos</div>
+    <h2 class="slide-title">¿Qué es un arreglo?</h2>
+    <p class="subtitle">Un arreglo es un grupo de variables del <b>mismo tipo de dato</b> a las que nos referimos con un nombre común. A cada variable la llamamos <b>elemento</b>.</p>
+    <div class="columns" style="margin-top: 14px; grid-template-columns: 1fr 1.1fr; align-items: center;">
+      <div class="card">
+        <h3>Características</h3>
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.75;">
+          <li>El tipo de los elementos puede ser cualquier tipo válido: <code>char</code>, <code>int</code>, <code>float</code>, etc.</li>
+          <li>Se almacenan en ubicaciones <b>contiguas</b> de memoria.</li>
+          <li>También llamados <i>array</i>, vector o matriz.</li>
+          <li>Un escalar es un tensor de orden 0; un vector, de orden 1; una matriz, de orden 2…</li>
+        </ul>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image2.png" alt="Vector, Matriz, Array y Listas" />
+        <div class="imgcaption">Vector → Matriz → Array (tensores de orden creciente) y listas.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Arreglos — imágenes como tensores -->
+  <section class="slide">
+    <div class="slide-eyebrow">Arreglos · En el mundo real</div>
+    <h2 class="slide-title">Una imagen es un arreglo</h2>
+    <p class="subtitle">Cualquier imagen en color se representa como un <b>tensor de tercer orden</b>: sus tres dimensiones son alto, ancho y color (canales RGB).</p>
+    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.25fr 1fr; align-items: center;">
+      <div class="card imgcard">
+        <img src="img/image6.png" alt="Imagen descompuesta en canales RGB y tensor 3D" />
+        <div class="imgcaption">Alto (H) × Ancho (W) × Canales (C). Cada canal es una matriz de intensidades.</div>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image5.png" alt="Imagen muestreada en una grilla de píxeles" />
+        <div class="imgcaption">Al muestrear en una grilla, cada celda es un elemento del arreglo.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Arreglos — sintaxis -->
+  <section class="slide">
+    <div class="slide-eyebrow">Arreglos · Sintaxis</div>
+    <h2 class="slide-title">Declaración de un arreglo</h2>
+    <pre class="code" style="margin-top: 6px;"><span class="t">&lt;Tipo de dato&gt;</span> [ ] <span class="n">Nombre_del_arreglo</span>;</pre>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Las partes</h3>
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.7;">
+          <li><b>&lt;Tipo de dato&gt;</b> — define el tipo de cada elemento.</li>
+          <li><b>[ ]</b> — entre corchetes se define el tamaño y las dimensiones.</li>
+          <li><b>Nombre_del_arreglo</b> — el nombre del arreglo.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Ejemplos de declaración</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">int</span>[] x;          <span class="c">// elementos int</span>
+<span class="t">string</span>[] s;       <span class="c">// elementos string</span>
+<span class="t">double</span>[] d;       <span class="c">// elementos double</span>
+<span class="t">Persona</span>[] Estudiantes; <span class="c">// instancias de Persona</span></pre>
+      </div>
+    </div>
+    <p class="small-note">Fuente: geeksforgeeks.org/c-sharp-arrays</p>
+  </section>
+
+  <!-- 6. Arreglos — inicialización -->
+  <section class="slide">
+    <div class="slide-eyebrow">Arreglos · Inicialización</div>
+    <h2 class="slide-title">Declaración e inicialización</h2>
+    <p class="subtitle">Un arreglo es un <b>reference type</b> (tipo por referencia), por lo que se usa la palabra clave <code>new</code> para crear una instancia.</p>
+    <pre class="code" style="margin-top: 6px;"><span class="t">type</span> [ ] <span class="n">&lt;Name_Array&gt;</span> = <span class="k">new</span> <span class="t">&lt;datatype&gt;</span>[size];
+
+<span class="t">int</span>[] intArray1 = <span class="k">new</span> <span class="t">int</span>[<span class="n">5</span>];
+<span class="t">int</span>[,] b = <span class="k">new</span> <span class="t">int</span>[<span class="n">7</span>,<span class="n">8</span>];               <span class="c">// arreglo bidimensional</span>
+<span class="t">string</span>[] Autos = {<span class="s">"Volvo"</span>, <span class="s">"BMW"</span>, <span class="s">"Ford"</span>, <span class="s">"Mazda"</span>};</pre>
+    <div class="callout" style="margin-top: 16px;"><b>Importante:</b> al crear la instancia, el rango y la longitud de cada dimensión quedan fijos y constantes durante toda su vida útil. Cada instancia de tipo Array hereda los miembros declarados por <code>System.Array</code>.</div>
+  </section>
+
+  <!-- 7. Arreglos — a tener en cuenta -->
+  <section class="slide">
+    <div class="slide-eyebrow">Arreglos · A tener en cuenta</div>
+    <h2 class="slide-title">Puntos clave de los arreglos</h2>
+    <ul class="bullets" style="font-size: 19px; margin-top: 8px;">
+      <li>Un arreglo puede ser <b>unidimensional</b>, <b>multidimensional</b> o <b>irregular</b> (jagged).</li>
+      <li>El número de dimensiones y la longitud de cada una se fijan al crear la instancia y <b>no se pueden cambiar</b>.</li>
+      <li>Valores por defecto: los numéricos se inicializan en <b>cero</b>; los de referencia en <b>null</b>.</li>
+      <li>Están indexados a cero: un arreglo con <i>n</i> elementos se indexa de <b>0 a n-1</b>.</li>
+      <li>Los elementos pueden ser de cualquier tipo, incluido otro tipo de arreglo.</li>
+      <li>Los tipos de arreglo son tipos de referencia derivados del tipo base abstracto <code>Array</code>.</li>
+    </ul>
+  </section>
+
+  <!-- 8. Genéricos — qué es -->
+  <section class="slide">
+    <div class="slide-eyebrow">Genéricos</div>
+    <h2 class="slide-title">¿Qué es un genérico?</h2>
+    <p class="subtitle">Es un <b>contenedor para un tipo de dato específico</b>, usado al crear una instancia de una variable genérica. El tipo se define recién al instanciar.</p>
+    <div class="columns" style="margin-top: 16px;">
+      <div class="card">
+        <h3>Declaración</h3>
+        <pre class="code" style="margin:0; padding:12px 14px;"><span class="k">public class</span> <span class="t">MiClase</span>&lt;<span class="t">T</span>&gt;
+{
+   <span class="t">T</span> value;
+}</pre>
+        <p class="small-note" style="margin-top: 10px;">Por convención, los parámetros de tipo se prefijan con la letra <b>T</b> y deben ser únicos dentro de la declaración para evitar conflictos de nombres.</p>
+      </div>
+      <div class="card">
+        <h3>Ventajas</h3>
+        <ul style="margin: 0; padding-left: 18px; line-height: 1.9;">
+          <li><b>Rendimiento</b> — evita boxing/unboxing.</li>
+          <li><b>Seguridad de tipos</b> — errores en tiempo de compilación.</li>
+          <li><b>Reutilización de código</b> — una misma clase para muchos tipos.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Genéricos — implementación -->
+  <section class="slide">
+    <div class="slide-eyebrow">Genéricos · Implementación</div>
+    <h2 class="slide-title">Sustitución del tipo genérico</h2>
+    <div class="columns" style="margin-top: 8px;">
+      <div class="card">
+        <h3>Implementación</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">public class</span> <span class="t">MiClase</span>&lt;<span class="t">T</span>&gt;
+{
+   <span class="t">T</span> value;
+   <span class="k">public</span> <span class="t">MiClase</span>(<span class="t">T</span> t)
+   {
+      value = t;
+   }
+   <span class="k">public</span> <span class="t">T</span> GetValor()
+   {
+      <span class="k">return</span> value;
+   }
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Uso</h3>
+        <pre class="code" style="margin:0; padding:12px 14px;"><span class="t">MiClase</span>&lt;<span class="t">int</span>&gt; Instancia =
+   <span class="k">new</span> <span class="t">MiClase</span>&lt;<span class="t">int</span>&gt;();
+
+<span class="t">MiClase</span>&lt;<span class="t">string</span>&gt; Instancia =
+   <span class="k">new</span> <span class="t">MiClase</span>&lt;<span class="t">string</span>&gt;();</pre>
+        <p class="small-note" style="margin-top: 12px;">Dentro de la implementación, el parámetro <b>T</b> se sustituye por el tipo específico: en el primer caso por <code>int</code>, en el segundo por <code>string</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. Colecciones — intro (con imagen de interfaces) -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones</div>
+    <h2 class="slide-title">Colecciones</h2>
+    <div class="columns" style="margin-top: 6px; grid-template-columns: 1fr 1.1fr; align-items: center;">
+      <div>
+        <p class="subtitle">Proporcionan una forma más flexible de trabajar con grupos de objetos. A diferencia de los arreglos, el grupo puede <b>crecer y reducirse dinámicamente</b> a medida que cambian las necesidades de la aplicación.</p>
+        <div class="callout" style="margin-top: 16px;">Todas las colecciones genéricas comparten una jerarquía de interfaces: <code>IEnumerable&lt;T&gt;</code> → <code>ICollection&lt;T&gt;</code> → <code>IList&lt;T&gt;</code> / <code>IDictionary&lt;T,V&gt;</code>.</div>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image8.png" alt="Jerarquía de interfaces de colecciones genéricas" />
+        <div class="imgcaption">Cada interfaz aporta sus operaciones: Add/Remove, IndexOf/Insert, Keys/Values…</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11. Colecciones — espacios de nombre -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · Espacios de nombre</div>
+    <h2 class="slide-title">¿Dónde viven las colecciones?</h2>
+    <p class="subtitle">El .NET Framework provee muchas colecciones comunes, cada una diseñada para un propósito específico. Pertenecen a estos espacios de nombre:</p>
+    <div class="columns three" style="margin-top: 16px;">
+      <div class="card">
+        <h3>System.Collections.Generic</h3>
+        <p>Colecciones genéricas <b>fuertemente tipadas</b>: todos los elementos tienen el mismo tipo. Mejor rendimiento y mayor seguridad de tipos.</p>
+        <span class="pill">recomendado</span>
+      </div>
+      <div class="card">
+        <h3>System.Collections.Concurrent</h3>
+        <p>Desde .NET Framework 4+. Operaciones eficientes y <b>seguras para trabajo asincrónico</b>: acceso a los elementos desde múltiples hilos.</p>
+        <span class="pill">multi-hilo</span>
+      </div>
+      <div class="card">
+        <h3>System.Collections</h3>
+        <p>Las clases guardan los elementos como objetos de tipo <code>Object</code>, no fuertemente tipados.</p>
+        <span class="pill">obsoleto</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. Colecciones — tipos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · System.Collections.Generic</div>
+    <h2 class="slide-title">Tipos de colecciones más usadas</h2>
+    <table class="tbl" style="margin-top: 14px;">
+      <thead><tr><th>Clase</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>Dictionary&lt;TKey,TValue&gt;</code></td>
+          <td>Colección de pares <b>clave/valor</b> (key/value pair) a los que se accede por su clave.</td>
+        </tr>
+        <tr>
+          <td><code>List&lt;T&gt;</code></td>
+          <td>Lista de objetos accesible por un <b>índice</b>. Provee métodos para buscar, ordenar y modificar la lista.</td>
+        </tr>
+        <tr>
+          <td><code>Queue&lt;T&gt;</code></td>
+          <td>Colección organizada como <b>FIFO</b> (first in, first out). La conocemos como <b>Fila</b> o <b>Cola</b>.</td>
+        </tr>
+        <tr>
+          <td><code>Stack&lt;T&gt;</code></td>
+          <td>Colección de elementos <b>LIFO</b> (last in, first out). La conocemos como <b>Pila</b>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 13. Colecciones — uso -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · Uso</div>
+    <h2 class="slide-title">Instanciar y agregar elementos</h2>
+    <p class="subtitle">Una colección es una <b>clase</b>: hay que declarar una instancia antes de poder agregarle elementos.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Crear una instancia</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// lista de objetos int</span>
+<span class="t">List</span>&lt;<span class="t">int</span>&gt; MiLista =
+   <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">int</span>&gt;();
+
+<span class="c">// diccionario int → string</span>
+<span class="t">Dictionary</span>&lt;<span class="t">int</span>, <span class="t">string</span>&gt; MiDiccionario =
+   <span class="k">new</span> <span class="t">Dictionary</span>&lt;<span class="t">int</span>,<span class="t">string</span>&gt;();</pre>
+      </div>
+      <div class="card">
+        <h3>Agregar elementos</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// agrego el 5 a la lista</span>
+MiLista.Add(<span class="n">5</span>);
+
+<span class="c">// agrego al diccionario con</span>
+<span class="c">// la llave 1 → "Opción 1"</span>
+MiDiccionario.Add(<span class="n">1</span>, <span class="s">"Opción 1"</span>);</pre>
+        <p class="small-note" style="margin-top: 12px;">En el diccionario, el primer parámetro es la <b>clave</b> y el segundo el <b>valor</b> asociado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13b. Listas — ejemplos básicos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · List&lt;T&gt;</div>
+    <h2 class="slide-title">Ejemplos con listas</h2>
+    <p class="subtitle"><code>List&lt;T&gt;</code> es la colección genérica más usada: una lista de tamaño dinámico accesible por índice.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Crear y agregar</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// crear una lista vacía</span>
+<span class="t">List</span>&lt;<span class="t">string</span>&gt; frutas = <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">string</span>&gt;();
+
+frutas.Add(<span class="s">"Manzana"</span>);
+frutas.Add(<span class="s">"Banana"</span>);
+frutas.Add(<span class="s">"Naranja"</span>);
+
+<span class="c">// inicializar con valores</span>
+<span class="t">List</span>&lt;<span class="t">int</span>&gt; numeros =
+   <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">int</span>&gt;() { <span class="n">10</span>, <span class="n">20</span>, <span class="n">30</span> };</pre>
+      </div>
+      <div class="card">
+        <h3>Acceder, recorrer y contar</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// acceso por índice (base 0)</span>
+<span class="t">string</span> primera = frutas[<span class="n">0</span>];  <span class="c">// "Manzana"</span>
+
+<span class="c">// recorrer con foreach</span>
+<span class="k">foreach</span> (<span class="t">string</span> f <span class="k">in</span> frutas)
+{
+   <span class="t">Console</span>.WriteLine(f);
+}
+
+<span class="c">// cantidad de elementos</span>
+<span class="t">int</span> total = frutas.Count;     <span class="c">// 3</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13c. Listas — más operaciones -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · List&lt;T&gt;</div>
+    <h2 class="slide-title">Listas: más operaciones</h2>
+    <p class="subtitle">Además de agregar, <code>List&lt;T&gt;</code> provee métodos para buscar, insertar, quitar y ordenar.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Buscar, insertar y quitar</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// ¿contiene un elemento?</span>
+<span class="t">bool</span> hay = frutas.Contains(<span class="s">"Banana"</span>);  <span class="c">// true</span>
+
+<span class="c">// posición de un elemento</span>
+<span class="t">int</span> pos = frutas.IndexOf(<span class="s">"Naranja"</span>);    <span class="c">// 2</span>
+
+<span class="c">// insertar en una posición</span>
+frutas.Insert(<span class="n">1</span>, <span class="s">"Pera"</span>);
+
+<span class="c">// quitar por valor y por índice</span>
+frutas.Remove(<span class="s">"Manzana"</span>);
+frutas.RemoveAt(<span class="n">0</span>);</pre>
+      </div>
+      <div class="card">
+        <h3>Ordenar y agregar en lote</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">List</span>&lt;<span class="t">int</span>&gt; numeros = <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">int</span>&gt;() { <span class="n">30</span>, <span class="n">10</span>, <span class="n">20</span> };
+
+<span class="c">// agregar varios de una vez</span>
+numeros.AddRange(<span class="k">new</span> <span class="t">int</span>[] { <span class="n">40</span>, <span class="n">50</span> });
+
+<span class="c">// ordenar de menor a mayor</span>
+numeros.Sort();      <span class="c">// 10, 20, 30, 40, 50</span>
+
+<span class="c">// invertir el orden</span>
+numeros.Reverse();
+
+<span class="c">// vaciar la lista</span>
+numeros.Clear();</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13d. Listas — formas de recorrer (iteradores) -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · Iteradores</div>
+    <h2 class="slide-title">Formas de recorrer una lista</h2>
+    <p class="subtitle">Una lista se puede recorrer de varias maneras. Todas terminan apoyándose en el mismo mecanismo: el <b>enumerador</b>.</p>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card">
+        <h3><code>for</code> con índice</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">for</span> (<span class="t">int</span> i = <span class="n">0</span>;
+     i &lt; frutas.Count;
+     i++)
+{
+   <span class="t">Console</span>.WriteLine(
+      frutas[i]);
+}</pre>
+        <p class="small-note" style="margin-top:10px;">Control total del índice; útil para recorrer al revés o de a saltos.</p>
+      </div>
+      <div class="card">
+        <h3><code>foreach</code></h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">foreach</span> (<span class="t">string</span> f
+         <span class="k">in</span> frutas)
+{
+   <span class="t">Console</span>.WriteLine(f);
+}</pre>
+        <p class="small-note" style="margin-top:10px;">La forma más simple y legible. No expone el índice.</p>
+      </div>
+      <div class="card">
+        <h3>Enumerador manual</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="t">IEnumerator</span>&lt;<span class="t">string</span>&gt; e =
+   frutas.GetEnumerator();
+
+<span class="k">while</span> (e.MoveNext())
+{
+   <span class="t">Console</span>.WriteLine(
+      e.Current);
+}</pre>
+        <p class="small-note" style="margin-top:10px;">Es lo que hace <code>foreach</code> por dentro: <code>MoveNext()</code> + <code>Current</code>.</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 14px;">Todas las colecciones que implementan <code>IEnumerable&lt;T&gt;</code> se pueden recorrer con <code>foreach</code> — por eso funciona igual en <code>List</code>, <code>Dictionary</code>, <code>Queue</code> o <code>Stack</code>.</div>
+  </section>
+
+  <!-- 13e. Listas de objetos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · List&lt;Persona&gt;</div>
+    <h2 class="slide-title">Listas de objetos</h2>
+    <p class="subtitle">Una lista no se limita a tipos simples: puede guardar instancias de una <b>clase propia</b>.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Una clase y su lista</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">class</span> <span class="t">Persona</span>
+{
+   <span class="k">public</span> <span class="t">string</span> Nombre;
+   <span class="k">public</span> <span class="t">int</span> Edad;
+}
+
+<span class="t">List</span>&lt;<span class="t">Persona</span>&gt; estudiantes =
+   <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">Persona</span>&gt;();
+
+estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nombre = <span class="s">"Ana"</span>, Edad = <span class="n">20</span> });
+estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nombre = <span class="s">"Luis"</span>, Edad = <span class="n">22</span> });</pre>
+      </div>
+      <div class="card">
+        <h3>Recorrer y filtrar</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// recorrer los objetos</span>
+<span class="k">foreach</span> (<span class="t">Persona</span> p <span class="k">in</span> estudiantes)
+{
+   <span class="t">Console</span>.WriteLine($<span class="s">"{p.Nombre} - {p.Edad}"</span>);
+}
+
+<span class="c">// acceder por índice</span>
+<span class="t">Persona</span> primero = estudiantes[<span class="n">0</span>];  <span class="c">// Ana</span>
+
+<span class="c">// filtrar manualmente (mayores de 21)</span>
+<span class="t">List</span>&lt;<span class="t">Persona</span>&gt; mayores = <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">Persona</span>&gt;();
+<span class="k">foreach</span> (<span class="t">Persona</span> p <span class="k">in</span> estudiantes)
+   <span class="k">if</span> (p.Edad &gt; <span class="n">21</span>) mayores.Add(p);</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13f. Listas — LINQ simple -->
+  <section class="slide">
+    <div class="slide-eyebrow">Colecciones · LINQ</div>
+    <h2 class="slide-title">Consultar listas con LINQ</h2>
+    <p class="subtitle">LINQ permite consultar colecciones de forma <b>declarativa</b>, reemplazando los <code>foreach</code> de filtrado por expresiones más cortas.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Filtrar y proyectar</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">using</span> <span class="t">System.Linq</span>;
+
+<span class="c">// filtrar: mayores de 21</span>
+<span class="t">List</span>&lt;<span class="t">Persona</span>&gt; mayores = estudiantes
+   .Where(p =&gt; p.Edad &gt; <span class="n">21</span>)
+   .ToList();
+
+<span class="c">// proyectar: solo los nombres</span>
+<span class="t">List</span>&lt;<span class="t">string</span>&gt; nombres = estudiantes
+   .Select(p =&gt; p.Nombre)
+   .ToList();</pre>
+      </div>
+      <div class="card">
+        <h3>Operaciones de agregado</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// ¿hay algún mayor de edad?</span>
+<span class="t">bool</span> hayMayor = estudiantes.Any(p =&gt; p.Edad &gt;= <span class="n">18</span>);
+
+<span class="c">// el primero que cumpla</span>
+<span class="t">Persona</span> ana = estudiantes.First(p =&gt; p.Nombre == <span class="s">"Ana"</span>);
+
+<span class="c">// contar y promediar</span>
+<span class="t">int</span> cuantos = estudiantes.Count(p =&gt; p.Edad &gt; <span class="n">21</span>);
+<span class="t">double</span> promedio = estudiantes.Average(p =&gt; p.Edad);</pre>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 14px;">LINQ no es magia: internamente sigue <b>iterando con un enumerador</b> sobre la colección. Es azúcar sintáctico sobre <code>IEnumerable&lt;T&gt;</code>.</div>
+  </section>
+
+  <!-- 14. Enum -->
+  <section class="slide">
+    <div class="slide-eyebrow">Enum</div>
+    <h2 class="slide-title">Enumeraciones</h2>
+    <p class="subtitle">Estructura de datos de tipo <b>valor</b>. Permite declarar una lista de constantes con nombre y referirnos a cada una por un identificador que las agrupa.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Crear un enum</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">enum</span> <span class="t">DiaDeLaSemana</span>
+{
+   Domingo = <span class="n">0</span>,
+   Lunes = <span class="n">1</span>,
+   Martes = <span class="n">2</span>,
+   Miercoles = <span class="n">3</span>,
+   Jueves = <span class="n">4</span>,
+   Viernes = <span class="n">5</span>,
+   Sabado = <span class="n">6</span>
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Utilizar un enum</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">DiaDeLaSemana</span> MiDía =
+   <span class="t">DiaDeLaSemana</span>.Domingo;</pre>
+        <p class="small-note" style="margin-top: 12px;">Se puede definir el tipo subyacente, por ejemplo <code>ushort</code>, y asignar valores arbitrarios:</p>
+        <pre class="code" style="margin:8px 0 0; font-size:13px; padding:12px 14px;"><span class="k">enum</span> <span class="t">ErrorCode</span> : <span class="t">ushort</span>
+{
+   Ninguno = <span class="n">0</span>,
+   PerdidaDeConexion = <span class="n">100</span>,
+   RecursoNoEncontrado = <span class="n">404</span>
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15. Enum FLAG -->
+  <section class="slide">
+    <div class="slide-eyebrow">Enum · Flags</div>
+    <h2 class="slide-title">Enum como combinación de opciones</h2>
+    <p class="subtitle">Con el decorador <code>[Flags]</code>, un enum puede representar una <b>combinación de elecciones</b>. Cada miembro se comporta como un campo de bits (potencias de 2).</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Declarar con [Flags]</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">[Flags]</span>
+<span class="k">enum</span> <span class="t">DiaDeLaSemana</span>
+{
+   Ninguno = <span class="n">0</span>,
+   Domingo = <span class="n">1</span>,
+   Lunes = <span class="n">2</span>,
+   Martes = <span class="n">4</span>,
+   Miércoles = <span class="n">8</span>,
+   Jueves = <span class="n">16</span>,
+   Viernes = <span class="n">32</span>,
+   Sabado = <span class="n">64</span>
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Combinar con operadores lógicos</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">DiaDeLaSemana</span> FindeSemana =
+   <span class="t">DiaDeLaSemana</span>.Domingo |
+   <span class="t">DiaDeLaSemana</span>.Sabado;</pre>
+        <p class="small-note" style="margin-top: 12px;">Se usan los operadores <b>OR</b> (<code>|</code>) para combinar y <b>AND</b> (<code>&amp;</code>) para intersecar / comprobar qué opciones están activas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16. Documentación -->
+  <section class="slide">
+    <div class="slide-eyebrow">Buena práctica</div>
+    <h2 class="slide-title">Usá la documentación oficial</h2>
+    <p class="subtitle" style="max-width: 880px;">Sumamente importante: consultar siempre la documentación oficial del framework, librería o API con la que estés trabajando.</p>
+    <div class="callout" style="margin-top: 18px; font-size: 18px;">
+      <b>.NET API Browser:</b> <code>docs.microsoft.com/es-es/dotnet/api/</code><br>
+      Ahí encontrás cada clase de colección, sus métodos, sobrecargas y ejemplos — la fuente de verdad por encima de cualquier tutorial.
+    </div>
+  </section>
+
+  <!-- 17. Recap + Bibliografía -->
+  <section class="slide">
+    <h2 class="slide-title">Repaso &amp; Bibliografía</h2>
+    <div class="two-col-content" style="margin-top: 14px;">
+      <div class="col">
+        <h4>En una línea</h4>
+        <p class="subtitle" style="font-size: 18px; color: var(--text);">Usá <b>arreglos</b> cuando el tamaño es fijo, <b>colecciones genéricas</b> cuando crece dinámicamente, <b>genéricos</b> para reutilizar con seguridad de tipos y <b>enum</b> para constantes con nombre.</p>
+        <h4 style="margin-top: 22px;">Decisión rápida</h4>
+        <ul class="bullets" style="font-size: 16px;">
+          <li>Tamaño fijo, mismo tipo → <code>arreglo</code></li>
+          <li>Crece/se reduce, por índice → <code>List&lt;T&gt;</code></li>
+          <li>Acceso por clave → <code>Dictionary&lt;K,V&gt;</code></li>
+          <li>FIFO → <code>Queue&lt;T&gt;</code> · LIFO → <code>Stack&lt;T&gt;</code></li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4>Bibliografía</h4>
+        <ul class="bullets" style="font-size: 14px;">
+          <li>Arreglos — geeksforgeeks.org/c-sharp-arrays</li>
+          <li>Colecciones — docs.microsoft.com/.../concepts/collections</li>
+          <li>Genéricos — docs.microsoft.com/es-es/dotnet/standard/generics</li>
+          <li>Generics (blog) — sparraguerra.wordpress.com</li>
+        </ul>
+        <h4 style="margin-top: 22px;">Navegación de este deck</h4>
+        <p style="font-size: 15px; color: var(--muted); line-height: 1.7;">
+          <span class="kbd">→</span> siguiente · <span class="kbd">←</span> atrás · <span class="kbd">Espacio</span> siguiente · <span class="kbd">Inicio</span> primera · <span class="kbd">Fin</span> última
+        </p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 22px;"><b>¿Preguntas?</b></div>
+  </section>
+
+</div>
+
+<div class="brand"><b>C#</b> · Clase 7 — Colecciones</div>
+<div class="pager"><span id="cur">1</span> / <span id="total">1</span></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  const total = document.getElementById('total');
+  total.textContent = slides.length;
+
+  let i = 0;
+  function show(idx) {
+    i = Math.max(0, Math.min(slides.length - 1, idx));
+    slides.forEach((s, n) => s.classList.toggle('active', n === i));
+    cur.textContent = i + 1;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    if (location.hash !== '#' + (i + 1)) {
+      history.replaceState(null, '', '#' + (i + 1));
+    }
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, pre, code, input, button')) return;
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.5) show(i + 1); else show(i - 1);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const n = parseInt((location.hash || '#1').slice(1), 10);
+    if (!isNaN(n)) show(n - 1);
+  });
+
+  const initial = parseInt((location.hash || '#1').slice(1), 10);
+  show(isNaN(initial) ? 0 : initial - 1);
+</script>
+
+</body>
+</html>
