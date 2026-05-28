@@ -521,6 +521,49 @@
     </div>
   </section>
 
+  <!-- 9b. Genéricos — ejemplo práctico -->
+  <section class="slide">
+    <div class="slide-eyebrow">Genéricos · Ejemplo práctico</div>
+    <h2 class="slide-title">Una pila genérica reutilizable</h2>
+    <p class="subtitle">Definimos <b>una sola vez</b> una <code>Pila&lt;T&gt;</code> y la usamos con cualquier tipo: <code>string</code>, <code>int</code>, objetos propios…</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>La clase genérica</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">public class</span> <span class="t">Pila</span>&lt;<span class="t">T</span>&gt;
+{
+   <span class="k">private</span> <span class="t">List</span>&lt;<span class="t">T</span>&gt; items = <span class="k">new</span> <span class="t">List</span>&lt;<span class="t">T</span>&gt;();
+
+   <span class="k">public void</span> Apilar(<span class="t">T</span> item) =&gt; items.Add(item);
+
+   <span class="k">public</span> <span class="t">T</span> Desapilar()
+   {
+      <span class="t">T</span> ultimo = items[items.Count - <span class="n">1</span>];
+      items.RemoveAt(items.Count - <span class="n">1</span>);
+      <span class="k">return</span> ultimo;
+   }
+
+   <span class="k">public int</span> Cantidad =&gt; items.Count;
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Usarla con distintos tipos</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="c">// pila de tareas (string)</span>
+<span class="t">Pila</span>&lt;<span class="t">string</span>&gt; tareas = <span class="k">new</span> <span class="t">Pila</span>&lt;<span class="t">string</span>&gt;();
+tareas.Apilar(<span class="s">"Estudiar"</span>);
+tareas.Apilar(<span class="s">"Practicar"</span>);
+
+<span class="t">Console</span>.WriteLine(tareas.Desapilar()); <span class="c">// "Practicar"</span>
+<span class="t">Console</span>.WriteLine(tareas.Cantidad);     <span class="c">// 1</span>
+
+<span class="c">// la MISMA clase, ahora con int</span>
+<span class="t">Pila</span>&lt;<span class="t">int</span>&gt; numeros = <span class="k">new</span> <span class="t">Pila</span>&lt;<span class="t">int</span>&gt;();
+numeros.Apilar(<span class="n">10</span>);
+numeros.Apilar(<span class="n">20</span>);
+<span class="t">Console</span>.WriteLine(numeros.Desapilar()); <span class="c">// 20</span></pre>
+      </div>
+    </div>
+  </section>
+
   <!-- 10. Colecciones — intro (con imagen de interfaces) -->
   <section class="slide">
     <div class="slide-eyebrow">Colecciones</div>
