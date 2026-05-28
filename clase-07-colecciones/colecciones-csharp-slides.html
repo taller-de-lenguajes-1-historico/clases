@@ -153,6 +153,27 @@
   pre.code .t { color: #8250df; }
   pre.code .n { color: #0550ae; }
 
+  /* Botón copiar código */
+  .code-wrap { position: relative; }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .code-wrap:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); opacity: 1; }
+
   table.tbl {
     width: 100%;
     border-collapse: collapse;
@@ -322,7 +343,7 @@
       overflow: hidden;
     }
     .slide:last-child { page-break-after: auto; break-after: auto; }
-    .progress, .pager, .brand { display: none !important; }
+    .progress, .pager, .brand, .copy-btn { display: none !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   }
 </style>
@@ -967,6 +988,50 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
 <div class="pager"><span id="cur">1</span> / <span id="total">1</span></div>
 
 <script>
+  // Botón "Copiar" en cada bloque de código
+  document.querySelectorAll('pre.code').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copiar';
+
+    const flash = (txt, ok) => {
+      btn.textContent = txt;
+      btn.classList.toggle('copied', !!ok);
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1500);
+    };
+
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const code = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        flash('¡Copiado!', true);
+      } catch (err) {
+        // Fallback para contextos no seguros (ej. file://)
+        try {
+          const r = document.createRange();
+          r.selectNodeContents(pre);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+          document.execCommand('copy');
+          sel.removeAllRanges();
+          flash('¡Copiado!', true);
+        } catch (_) {
+          flash('Error', false);
+        }
+      }
+    });
+
+    wrap.appendChild(btn);
+  });
+
   const slides = document.querySelectorAll('.slide');
   const progress = document.getElementById('progress');
   const cur = document.getElementById('cur');
