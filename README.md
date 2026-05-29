@@ -10,6 +10,10 @@ Material de clases: presentaciones (slides en HTML) y proyectos de ejemplo ejecu
 | 6 | Clases (POO: miembros, métodos, visibilidad, clase estática) | [clase-06-clases](./clase-06-clases) |
 | 7 | Colecciones en C# (arreglos, genéricos, colecciones, enum) | [clase-07-colecciones](./clase-07-colecciones) |
 
+## Framework de presentaciones
+
+Las presentaciones usan **[slidedeck](https://github.com/Spktro/slidedeck)** (un solo `deck.css` + `deck.js`), incluido vía jsDelivr CDN. Cada slide es HTML plano dentro de `<div class="deck">`; el framework agrega tema claro/oscuro, selector de tamaño, navegador de miniaturas, copiar código y export a PDF.
+
 ## Estructura
 
 Cada clase es una carpeta autocontenida:
