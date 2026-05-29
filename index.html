@@ -15,6 +15,24 @@
     --accent: #7c3aed;
     --accent-2: #2563eb;
   }
+  html[data-theme="dark"] {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1d222c;
+    --border: #2a3140;
+    --text: #e6e9ef;
+    --muted: #9aa3b2;
+    --accent: #b08cff;
+    --accent-2: #79b8ff;
+  }
+  .theme-toggle {
+    position: fixed; top: 16px; right: 18px; z-index: 20;
+    font-size: 15px; line-height: 1;
+    border: 1px solid var(--border); background: var(--panel); cursor: pointer;
+    padding: 7px 11px; border-radius: 999px;
+    box-shadow: 0 2px 10px rgba(20,30,55,0.10);
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
@@ -99,6 +117,7 @@
 </style>
 </head>
 <body>
+  <button class="theme-toggle" id="themeBtn" type="button" title="Modo claro / oscuro" aria-label="Cambiar tema">🌙</button>
   <div class="wrap">
     <header>
       <div class="eyebrow">Taller de Lenguajes 1</div>
@@ -172,5 +191,25 @@
       <p>Las presentaciones se navegan con <b>← →</b> / <b>Espacio</b> y se exportan a PDF con <b>Ctrl/Cmd + P</b>. Los proyectos se corren con <b>dotnet run</b>.</p>
     </footer>
   </div>
+
+  <script>
+    // Tema claro / oscuro — compartido con los decks (misma clave en localStorage)
+    const themeBtn = document.getElementById('themeBtn');
+    let theme = localStorage.getItem('deckTheme') || 'light';
+    function applyTheme() {
+      document.documentElement.setAttribute('data-theme', theme);
+      themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    }
+    themeBtn.addEventListener('click', () => {
+      theme = theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('deckTheme', theme);
+      applyTheme();
+    });
+    // Sincronización en vivo entre pestañas
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'deckTheme' && e.newValue) { theme = e.newValue; applyTheme(); }
+    });
+    applyTheme();
+  </script>
 </body>
 </html>

@@ -1236,6 +1236,9 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
     localStorage.setItem('deckTheme', theme);
     applyTheme();
   });
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'deckTheme' && e.newValue) { theme = e.newValue; applyTheme(); }
+  });
   applyTheme();
 
   let sizeId = localStorage.getItem('deckSize') || 'm';
