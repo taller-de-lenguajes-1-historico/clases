@@ -917,13 +917,13 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
       <div class="card">
         <h3>Declarar con [Flags]</h3>
         <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">[Flags]</span>
-<span class="k">enum</span> <span class="t">DiaDeLaSemana</span>
+<span class="k">enum</span> <span class="t">Dias</span>
 {
    Ninguno = <span class="n">0</span>,
    Domingo = <span class="n">1</span>,
    Lunes = <span class="n">2</span>,
    Martes = <span class="n">4</span>,
-   Miércoles = <span class="n">8</span>,
+   Miercoles = <span class="n">8</span>,
    Jueves = <span class="n">16</span>,
    Viernes = <span class="n">32</span>,
    Sabado = <span class="n">64</span>
@@ -931,9 +931,9 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
       </div>
       <div class="card">
         <h3>Combinar con operadores lógicos</h3>
-        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">DiaDeLaSemana</span> FindeSemana =
-   <span class="t">DiaDeLaSemana</span>.Domingo |
-   <span class="t">DiaDeLaSemana</span>.Sabado;</pre>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">Dias</span> FindeSemana =
+   <span class="t">Dias</span>.Domingo |
+   <span class="t">Dias</span>.Sabado;</pre>
         <p class="small-note" style="margin-top: 12px;">Se usan los operadores <b>OR</b> (<code>|</code>) para combinar y <b>AND</b> (<code>&amp;</code>) para intersecar / comprobar qué opciones están activas.</p>
       </div>
     </div>
