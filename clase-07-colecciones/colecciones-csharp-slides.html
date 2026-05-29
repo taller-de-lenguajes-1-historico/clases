@@ -94,6 +94,56 @@
   }
   .home-link:hover { color: var(--accent); border-color: var(--accent); }
 
+  /* Filmstrip: miniaturas de slides (aparece desde la izquierda) */
+  .filmstrip-hot { position: fixed; top: 0; left: 0; width: 16px; height: 100vh; z-index: 29; }
+  .filmstrip {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; width: 240px;
+    z-index: 30;
+    background: rgba(255,255,255,0.94);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border-right: 1px solid var(--border);
+    box-shadow: 6px 0 28px rgba(20,30,55,0.10);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 14px 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .filmstrip.open { transform: translateX(0); }
+  .filmstrip:hover { transform: translateX(0); }
+  .thumb {
+    position: relative;
+    width: 208px; height: 117px;
+    flex: 0 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+    cursor: pointer; padding: 0;
+  }
+  .thumb:hover { border-color: var(--accent); }
+  .thumb.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 1280px; height: 720px;
+    transform: scale(0.1625); transform-origin: top left;
+    pointer-events: none;
+  }
+  .thumb-slide {
+    display: flex !important;
+    position: static !important;
+    zoom: 1 !important;
+    width: 1280px !important; height: 720px !important;
+  }
+  .thumb-num {
+    position: absolute; bottom: 4px; right: 5px;
+    font-size: 10px; font-weight: 700; color: #fff;
+    background: rgba(20,30,55,0.6);
+    border-radius: 4px; padding: 0 5px;
+    pointer-events: none;
+  }
+
   .slide-eyebrow {
     color: var(--accent);
     font-size: 13px;
@@ -391,7 +441,7 @@
       overflow: hidden;
     }
     .slide:last-child { page-break-after: auto; break-after: auto; }
-    .progress, .pager, .brand, .copy-btn, .sizer, .home-link { display: none !important; }
+    .progress, .pager, .brand, .copy-btn, .sizer, .home-link, .filmstrip, .filmstrip-hot { display: none !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   }
 </style>
@@ -1123,6 +1173,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   const total = document.getElementById('total');
   total.textContent = slides.length;
 
+  let thumbEls = [];
   let i = 0;
   function show(idx) {
     i = Math.max(0, Math.min(slides.length - 1, idx));
@@ -1132,6 +1183,8 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
     if (location.hash !== '#' + (i + 1)) {
       history.replaceState(null, '', '#' + (i + 1));
     }
+    thumbEls.forEach((t, n) => t.classList.toggle('current', n === i));
+    if (thumbEls[i]) thumbEls[i].scrollIntoView({ block: 'nearest' });
   }
 
   document.addEventListener('keydown', (e) => {
@@ -1142,7 +1195,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   });
 
   document.addEventListener('click', (e) => {
-    if (e.target.closest('a, pre, code, input, button')) return;
+    if (e.target.closest('a, pre, code, input, button, .filmstrip')) return;
     const x = e.clientX / window.innerWidth;
     if (x > 0.5) show(i + 1); else show(i - 1);
   });
@@ -1151,6 +1204,37 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
     const n = parseInt((location.hash || '#1').slice(1), 10);
     if (!isNaN(n)) show(n - 1);
   });
+
+  // Filmstrip de miniaturas (clones escalados de cada slide)
+  (function buildFilmstrip() {
+    const film = document.createElement('div'); film.className = 'filmstrip';
+    const hot = document.createElement('div'); hot.className = 'filmstrip-hot';
+    slides.forEach((s, n) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = 'thumb';
+      const canvas = document.createElement('div');
+      canvas.className = 'thumb-canvas';
+      const clone = s.cloneNode(true);
+      clone.classList.remove('active');
+      clone.classList.add('thumb-slide');
+      clone.removeAttribute('id');
+      clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
+      canvas.appendChild(clone);
+      thumb.appendChild(canvas);
+      const num = document.createElement('span');
+      num.className = 'thumb-num';
+      num.textContent = n + 1;
+      thumb.appendChild(num);
+      thumb.addEventListener('click', (e) => { e.stopPropagation(); show(n); });
+      film.appendChild(thumb);
+      thumbEls.push(thumb);
+    });
+    document.body.appendChild(film);
+    document.body.appendChild(hot);
+    hot.addEventListener('mouseenter', () => film.classList.add('open'));
+    film.addEventListener('mouseleave', () => film.classList.remove('open'));
+  })();
 
   const initial = parseInt((location.hash || '#1').slice(1), 10);
   show(isNaN(initial) ? 0 : initial - 1);
