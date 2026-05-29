@@ -4,6 +4,7 @@
 Console.WriteLine("=== Clase 5 — Introducción a C# y .NET ===\n");
 
 Tipos.Run();
+Fundamentos.Run();
 Cadenas.Run();
 ControlDeFlujo.Run();
 

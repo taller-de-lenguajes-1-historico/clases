@@ -691,6 +691,37 @@ dotnet    new      console     --framework net8.0</pre>
     </div>
   </section>
 
+  <!-- 11b. Hola Mundo -->
+  <section class="slide">
+    <div class="slide-eyebrow">Primeros pasos</div>
+    <h2 class="slide-title">Tu primer programa</h2>
+    <p class="subtitle">El clásico "Hola, mundo". Desde .NET 6 alcanza con una línea (top-level statements); por debajo sigue existiendo la forma clásica con <code>Main</code>.</p>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>El programa mínimo (.NET 6+)</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// Program.cs</span>
+<span class="t">Console</span>.WriteLine(<span class="s">"¡Hola, mundo!"</span>);</pre>
+        <p class="small-note" style="margin-top:10px;">Las <i>top-level statements</i> esconden el <code>Main</code> para simplificar el inicio.</p>
+      </div>
+      <div class="card">
+        <h3>La forma clásica (explícita)</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">using</span> <span class="t">System</span>;
+
+<span class="k">namespace</span> <span class="t">MiApp</span>
+{
+   <span class="k">class</span> <span class="t">Program</span>
+   {
+      <span class="k">static void</span> Main(<span class="t">string</span>[] args)
+      {
+         <span class="t">Console</span>.WriteLine(<span class="s">"¡Hola, mundo!"</span>);
+      }
+   }
+}</pre>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 14px;"><b>Crear y correr:</b> <code>dotnet new console -o hola</code> &nbsp;→&nbsp; <code>cd hola</code> &nbsp;→&nbsp; <code>dotnet run</code></div>
+  </section>
+
   <!-- 12. El objeto Console -->
   <section class="slide">
     <div class="slide-eyebrow">Entrada / Salida</div>
@@ -759,6 +790,40 @@ dotnet    new      console     --framework net8.0</pre>
     </div>
   </section>
 
+  <!-- 14b. Variables, constantes y operadores -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · Variables</div>
+    <h2 class="slide-title">Variables, constantes y operadores</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>Declarar variables y constantes</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">int</span> edad = <span class="n">20</span>;          <span class="c">// tipo + nombre + valor</span>
+<span class="t">double</span> precio = <span class="n">9.99</span>;
+<span class="t">string</span> nombre = <span class="s">"Ana"</span>;
+
+<span class="k">var</span> ciudad = <span class="s">"Tucumán"</span>;   <span class="c">// var: infiere string</span>
+
+<span class="k">const double</span> Pi = <span class="n">3.1416</span>;  <span class="c">// no puede cambiar</span></pre>
+        <p class="small-note" style="margin-top:10px;"><code>var</code> no es "sin tipo": el compilador lo infiere y sigue siendo fuertemente tipado.</p>
+      </div>
+      <div class="card">
+        <h3>Operadores</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="c">// aritméticos</span>
+<span class="t">int</span> suma = <span class="n">3</span> + <span class="n">4</span>;     <span class="t">int</span> resto = <span class="n">10</span> % <span class="n">3</span>;  <span class="c">// 1</span>
+
+<span class="c">// comparación (dan bool)</span>
+<span class="t">bool</span> mayor = <span class="n">7</span> &gt; <span class="n">5</span>;    <span class="t">bool</span> ig = (a == b);
+
+<span class="c">// lógicos</span>
+<span class="t">bool</span> ok = (edad &gt;= <span class="n">18</span>) &amp;&amp; tieneDni;
+<span class="t">bool</span> no = !activo;       <span class="c">// negación</span>
+
+<span class="c">// asignación compuesta</span>
+contador += <span class="n">1</span>;   total *= <span class="n">2</span>;</pre>
+      </div>
+    </div>
+  </section>
+
   <!-- 15. El tipo string: inicialización y concatenación -->
   <section class="slide">
     <div class="slide-eyebrow">Tipos de datos · string</div>
@@ -808,6 +873,38 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
         <p class="small-note" style="margin-top:10px;"><code>TryParse</code> devuelve <code>true/false</code> sin lanzar excepción si la cadena no es válida. Lo implementan todos los tipos numéricos, <code>DateTime</code>, etc.</p>
       </div>
     </div>
+  </section>
+
+  <!-- 16b. Conversión de tipos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · Conversión</div>
+    <h2 class="slide-title">Conversión de tipos</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>Entre números (cast)</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">int</span> entero = <span class="n">10</span>;
+<span class="t">double</span> d = entero;       <span class="c">// implícita (no se pierde)</span>
+
+<span class="t">double</span> pi = <span class="n">3.99</span>;
+<span class="t">int</span> t = (<span class="t">int</span>)pi;        <span class="c">// explícita (cast) -> 3</span>
+
+<span class="c">// con la clase Convert</span>
+<span class="t">int</span> x = <span class="t">Convert</span>.ToInt32(<span class="s">"42"</span>);</pre>
+      </div>
+      <div class="card">
+        <h3>Desde texto (string → número)</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// Parse: lanza excepción si falla</span>
+<span class="t">int</span> n = <span class="t">int</span>.Parse(<span class="s">"123"</span>);
+
+<span class="c">// TryParse: seguro (true/false)</span>
+<span class="t">bool</span> ok = <span class="t">int</span>.TryParse(<span class="s">"abc"</span>, <span class="k">out</span> <span class="t">int</span> r);
+<span class="c">// ok = false</span>
+
+<span class="c">// cualquier valor -> texto</span>
+<span class="t">string</span> s = entero.ToString();</pre>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 14px;"><b>Regla práctica:</b> implícita cuando no hay pérdida de información; <b>cast</b> explícito cuando puede perderse (de <code>double</code> a <code>int</code> se trunca); <b>TryParse</b> para validar entrada de usuario.</div>
   </section>
 
   <!-- 17. Nullable types -->
@@ -909,6 +1006,40 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
    <span class="c">// elemento</span>
 }</pre>
         <p class="small-note" style="margin-top:8px;">Ideal para recorrer colecciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20b. Ejemplo integrador -->
+  <section class="slide">
+    <div class="slide-eyebrow">Manos a la obra</div>
+    <h2 class="slide-title">Juntando todo: un mini programa</h2>
+    <p class="subtitle">Pide datos al usuario, los convierte, calcula y decide. Usa casi todo lo de la clase.</p>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1.25fr 0.75fr; align-items: start;">
+      <div class="card">
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">Console</span>.Write(<span class="s">"¿Cómo te llamás? "</span>);
+<span class="t">string</span> nombre = <span class="t">Console</span>.ReadLine();
+
+<span class="t">Console</span>.Write(<span class="s">"¿En qué año naciste? "</span>);
+<span class="t">int</span>.TryParse(<span class="t">Console</span>.ReadLine(), <span class="k">out</span> <span class="t">int</span> anio);
+
+<span class="t">int</span> edad = <span class="t">DateTime</span>.Now.Year - anio;
+
+<span class="k">if</span> (edad &gt;= <span class="n">18</span>)
+   <span class="t">Console</span>.WriteLine($<span class="s">"Hola {nombre}, sos mayor ({edad})."</span>);
+<span class="k">else</span>
+   <span class="t">Console</span>.WriteLine($<span class="s">"Hola {nombre}, te faltan {18 - edad}."</span>);</pre>
+      </div>
+      <div class="card">
+        <h3>¿Qué practica?</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.7; font-size:15px;">
+          <li>Entrada con <code>Console.ReadLine</code></li>
+          <li>Conversión con <code>int.TryParse</code></li>
+          <li>Operador de resta y <code>DateTime.Now</code></li>
+          <li>Decisión con <code>if / else</code></li>
+          <li>Interpolación de cadenas</li>
+        </ul>
+        <div class="callout" style="margin-top:12px; font-size:14px;"><b>Salida:</b><br>¿Cómo te llamás? <b>Ana</b><br>¿En qué año naciste? <b>2005</b><br>Hola Ana, sos mayor (21).</div>
       </div>
     </div>
   </section>
