@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manejo de archivos — Clase Nro 8</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Spktro/slidedeck@v1/deck.css" />
+</head>
+<body>
+
+<div class="deck" id="deck" data-brand="C# · Clase 8 — Manejo de archivos" data-home="../index.html">
+
+  <!-- 1. Título -->
+  <section class="slide title-slide active" data-chapter="Introducción" data-topic="Portada">
+    <div class="title-grid">
+      <div>
+        <div class="slide-eyebrow">Clase Nro 8</div>
+        <h1 class="title">Manejo de <span class="accent">archivos</span></h1>
+        <p class="subtitle">Archivos y directorios, formatos, la librería <code>System.IO</code>, streams y las clases para leer y escribir.</p>
+        <div class="columns three" style="margin-top: 22px; gap: 12px;">
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Archivos y formatos</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">System.IO</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Directory y File</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Streams</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">FileStream</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Reader / Writer</h3></div>
+        </div>
+      </div>
+      <div class="title-photo">
+        <img src="img/image1.jpg" alt="Programación: laptop con código" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Directorios y archivos -->
+  <section class="slide" data-chapter="Conceptos" data-topic="Directorios y archivos">
+    <div class="slide-eyebrow">Conceptos</div>
+    <h2 class="slide-title">Directorios y archivos</h2>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Directorio</h3>
+        <p>Un <b>contenedor virtual</b> que agrupa archivos y subdirectorios según un criterio.</p>
+        <p style="margin-top:8px;">Guarda información <i>sobre</i> los archivos que contiene: sus atributos y dónde están físicamente en el dispositivo.</p>
+      </div>
+      <div class="card">
+        <h3>Archivo</h3>
+        <p>Una <b>colección de datos con un nombre</b>, guardada en almacenamiento secundario (disco magnético, óptico, electrónico…).</p>
+        <p style="margin-top:8px;">Persiste más allá de la ejecución del programa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Texto vs binario -->
+  <section class="slide" data-chapter="Conceptos" data-topic="Texto plano vs binario">
+    <div class="slide-eyebrow">Conceptos · Tipos de archivo</div>
+    <h2 class="slide-title">Texto plano vs binario</h2>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Texto plano (.txt)</h3>
+        <p>Solo caracteres <b>legibles por humanos</b>: letras, números, signos, y algunos de control (tab, salto de línea).</p>
+        <p style="margin-top:8px;">Importa la <b>codificación de caracteres</b> (UTF-8, etc.).</p>
+        <span class="pill">legible</span>
+      </div>
+      <div class="card">
+        <h3>Binario</h3>
+        <p>Información de cualquier tipo codificada en <b>binario</b> para almacenarse/procesarse.</p>
+        <p style="margin-top:8px;">Ejemplos: imágenes, texto formateado, ejecutables.</p>
+        <span class="pill">no legible directamente</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Formatos: extensión y metadatos -->
+  <section class="slide" data-chapter="Conceptos" data-topic="Formatos de archivo">
+    <div class="slide-eyebrow">Conceptos · Formatos</div>
+    <h2 class="slide-title">Formatos de archivo</h2>
+    <p class="subtitle">Un formato es un <b>estándar</b> que define cómo se organiza y codifica la información en el archivo.</p>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Extensión</h3>
+        <p>La convención usada para estructurar el archivo. <code>&lt;nombre&gt;.jpg</code></p>
+      </div>
+      <div class="card">
+        <h3>Metadatos</h3>
+        <p>Estructura de datos que permite <b>interpretar</b> el archivo (formato, dimensiones, fechas…).</p>
+      </div>
+      <div class="card">
+        <h3>Abiertos vs cerrados</h3>
+        <p>Según si el estándar es público y libre, o propietario.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Identificar el formato: header / magic number / EOF -->
+  <section class="slide" data-chapter="Conceptos" data-topic="Cabecera y magic number">
+    <div class="slide-eyebrow">Conceptos · Estructura interna</div>
+    <h2 class="slide-title">Cabecera, magic number y EOF</h2>
+    <p class="subtitle">Además de la extensión, el formato se identifica con info <b>dentro</b> del archivo, normalmente al principio.</p>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Header (cabecera)</h3>
+        <p>Bloque al inicio con la info necesaria para tratar el archivo: formato, dimensiones, tamaño, compresión…</p>
+      </div>
+      <div class="card">
+        <h3>Magic number</h3>
+        <p>Pocos bytes al comienzo de la cabecera que identifican el formato (firma).</p>
+      </div>
+      <div class="card">
+        <h3>EOF</h3>
+        <p><i>End Of File</i>: bytes que marcan el final del archivo.</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 16px;">Estructura típica: <b>cabecera</b> (firma + metadatos) → <b>cuerpo</b> (los datos) → <b>EOF</b>.</div>
+  </section>
+
+  <!-- 6. Magic numbers tabla -->
+  <section class="slide" data-chapter="Conceptos" data-topic="Firmas hexadecimales">
+    <div class="slide-eyebrow">Conceptos · Magic numbers</div>
+    <h2 class="slide-title">Firmas de algunos formatos</h2>
+    <p class="subtitle">Los primeros bytes en hexadecimal delatan el formato real, más allá de la extensión.</p>
+    <div class="columns" style="margin-top: 12px; align-items: start;">
+      <table class="tbl" style="font-size:15px;">
+        <thead><tr><th>Tipo</th><th>Cabecera (hex)</th><th>ASCII</th></tr></thead>
+        <tbody>
+          <tr><td><code>.PNG</code></td><td>89 50 4E 47</td><td>PNG</td></tr>
+          <tr><td><code>.JPEG</code></td><td>FF D8 FF E0</td><td>JFIF</td></tr>
+          <tr><td><code>.GIF</code></td><td>47 49 46 38</td><td>GIF8</td></tr>
+          <tr><td><code>.PDF</code></td><td>25 50 44 46</td><td>%PDF</td></tr>
+        </tbody>
+      </table>
+      <table class="tbl" style="font-size:15px;">
+        <thead><tr><th>Tipo</th><th>Cabecera (hex)</th><th>ASCII</th></tr></thead>
+        <tbody>
+          <tr><td><code>.ZIP</code></td><td>50 4B 03 04</td><td>PK</td></tr>
+          <tr><td><code>.RAR</code></td><td>52 61 72 21</td><td>Rar!</td></tr>
+          <tr><td><code>.EXE</code></td><td>4D 5A</td><td>MZ</td></tr>
+          <tr><td><code>ELF (Linux)</code></td><td>7F 45 4C 46</td><td>ELF</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 7. System.IO intro -->
+  <section class="slide" data-chapter="System.IO" data-topic="E/S de archivos">
+    <div class="slide-eyebrow">System.IO</div>
+    <h2 class="slide-title">Entrada/Salida en .NET</h2>
+    <p class="subtitle" style="max-width: 900px;">La <b>E/S de archivos y secuencias</b> es la transferencia de datos hacia o desde un medio de almacenamiento. En .NET, los espacios de nombre <code>System.IO</code> contienen los tipos para <b>leer y escribir</b> archivos y flujos, de forma sincrónica o asincrónica.</p>
+    <div class="callout" style="margin-top: 16px;">Para usarla, basta con <code>using System.IO;</code> (o ya viene con <i>ImplicitUsings</i>).</div>
+  </section>
+
+  <!-- 8. Clases principales de System.IO -->
+  <section class="slide" data-chapter="System.IO" data-topic="Clases principales">
+    <div class="slide-eyebrow">System.IO</div>
+    <h2 class="slide-title">Clases principales</h2>
+    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.15fr 0.85fr; align-items: center;">
+      <table class="tbl" style="font-size:14px;">
+        <thead><tr><th>Clase</th><th>Para qué</th></tr></thead>
+        <tbody>
+          <tr><td><code>File</code></td><td>Métodos <b>estáticos</b>: crear, copiar, borrar, mover y abrir archivos.</td></tr>
+          <tr><td><code>FileInfo</code></td><td>Lo mismo pero con métodos de <b>instancia</b>.</td></tr>
+          <tr><td><code>Directory</code></td><td>Métodos <b>estáticos</b> para crear, mover y enumerar directorios.</td></tr>
+          <tr><td><code>DirectoryInfo</code></td><td>Igual, con métodos de <b>instancia</b>.</td></tr>
+          <tr><td><code>Path</code></td><td>Procesar rutas de forma multiplataforma.</td></tr>
+        </tbody>
+      </table>
+      <div class="card imgcard">
+        <img src="img/image11.jpg" alt="Jerarquía de clases de System.IO" />
+        <div class="imgcaption">Jerarquía de clases de archivo de .NET.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. Objeto Directory -->
+  <section class="slide" data-chapter="System.IO" data-topic="Objeto Directory">
+    <div class="slide-eyebrow">System.IO · Directory</div>
+    <h2 class="slide-title">Objeto Directory</h2>
+    <table class="tbl" style="margin-top: 12px; font-size:15px;">
+      <thead><tr><th>Método</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>Exists(ruta)</code></td><td>Devuelve <code>true/false</code> según si el directorio existe.</td></tr>
+        <tr><td><code>CreateDirectory(ruta)</code></td><td>Crea el directorio (y los intermedios).</td></tr>
+        <tr><td><code>GetDirectories(ruta)</code></td><td>Lista los subdirectorios.</td></tr>
+        <tr><td><code>GetFiles(ruta)</code></td><td>Lista los archivos dentro del directorio.</td></tr>
+        <tr><td><code>GetLogicalDrives()</code></td><td>Obtiene los discos lógicos del sistema.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 10. Objeto File -->
+  <section class="slide" data-chapter="System.IO" data-topic="Objeto File">
+    <div class="slide-eyebrow">System.IO · File</div>
+    <h2 class="slide-title">Objeto File</h2>
+    <table class="tbl" style="margin-top: 12px; font-size:15px;">
+      <thead><tr><th>Método</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>File.Exists(ruta)</code></td><td>Comprueba si el archivo existe.</td></tr>
+        <tr><td><code>File.ReadAllText(ruta)</code></td><td>Lee todo el archivo y devuelve un <code>string</code>.</td></tr>
+        <tr><td><code>File.ReadAllLines(ruta)</code></td><td>Lee todas las líneas a un <code>string[]</code>.</td></tr>
+        <tr><td><code>File.WriteAllText / WriteAllLines</code></td><td>Escribe texto (crea o reemplaza).</td></tr>
+        <tr><td><code>File.Copy / File.Delete</code></td><td>Copiar y eliminar archivos.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 11. Streams: concepto -->
+  <section class="slide" data-chapter="Streams" data-topic="¿Qué es un flujo?">
+    <div class="slide-eyebrow">Streams</div>
+    <h2 class="slide-title">¿Qué es un stream (flujo)?</h2>
+    <p class="subtitle" style="max-width: 920px;">Cuando un archivo es muy grande para cargarlo entero en memoria (o supera el ancho de banda disponible), se transfiere <b>fragmentado en partes</b>, de forma secuencial, de una fuente a un receptor.</p>
+    <div class="callout" style="margin-top: 16px;">En vez de leer un archivo de 1000 MB de una vez (la app podría colgarse), el stream lo divide en <b>fragmentos manejables</b> que se procesan de a uno.</div>
+  </section>
+
+  <!-- 12. Streams: fuente -> destino -->
+  <section class="slide" data-chapter="Streams" data-topic="Fuente y destino">
+    <div class="slide-eyebrow">Streams · Dirección</div>
+    <h2 class="slide-title">Fuente → stream → destino</h2>
+    <div class="flow" style="margin-top: 24px;">
+      <div class="card"><h3>Fuente</h3><p>RAM, disco, red, otro proceso…</p></div>
+      <div class="arrow">→</div>
+      <div class="card"><h3>Stream</h3><p>Los datos viajan fragmentados, byte a byte.</p></div>
+      <div class="arrow">→</div>
+      <div class="card"><h3>Destino</h3><p>RAM, disco, red, otro proceso…</p></div>
+    </div>
+    <div class="columns" style="margin-top: 22px;">
+      <div class="card"><h3>Leer del stream</h3><p>Los datos van de una fuente externa <b>hacia</b> el programa.</p></div>
+      <div class="card"><h3>Escribir al stream</h3><p>Los datos van del programa <b>hacia</b> una fuente externa.</p></div>
+    </div>
+  </section>
+
+  <!-- 13. Tipos de flujo -->
+  <section class="slide" data-chapter="Streams" data-topic="Texto o bytes">
+    <div class="slide-eyebrow">Streams · Tipos de flujo</div>
+    <h2 class="slide-title">Flujo de texto o de bytes</h2>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Flujo de texto</h3>
+        <p>Secuencia de <b>caracteres</b>. Según el SO, cada línea puede terminar con <code>\r\n</code>. Para datos textuales.</p>
+      </div>
+      <div class="card">
+        <h3>Flujo binario</h3>
+        <p>Secuencia de <b>bytes</b>. El contenido exacto se preserva sin importar la apariencia. Para datos no textuales.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Clase Stream -->
+  <section class="slide" data-chapter="Streams" data-topic="La clase Stream">
+    <div class="slide-eyebrow">Streams · La clase base</div>
+    <h2 class="slide-title">La clase Stream</h2>
+    <p class="subtitle"><code>System.IO.Stream</code> es una clase <b>abstracta</b>: define la vista común para transferir bytes. Todas las clases de flujo heredan de ella y aíslan al programador del SO y los dispositivos.</p>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card"><h3>Lectura</h3><p>Transferir datos del flujo a una estructura (ej. un arreglo de bytes).</p></div>
+      <div class="card"><h3>Escritura</h3><p>Transferir datos al flujo desde un origen.</p></div>
+      <div class="card"><h3>Búsqueda</h3><p>Consultar y mover la posición actual dentro del flujo (<i>seek</i>).</p></div>
+    </div>
+    <p class="small-note">Según la clase concreta, se admiten todas o solo algunas de estas operaciones.</p>
+  </section>
+
+  <!-- 15. Tipos de Stream -->
+  <section class="slide" data-chapter="Streams" data-topic="Tipos de Stream">
+    <div class="slide-eyebrow">Streams · Implementaciones</div>
+    <h2 class="slide-title">Tipos de Stream</h2>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card"><h3>FileStream</h3><p>Lee/escribe bytes desde o hacia un <b>archivo físico</b>.</p></div>
+      <div class="card"><h3>MemoryStream</h3><p>Lee/escribe bytes almacenados en <b>memoria</b>.</p></div>
+      <div class="card"><h3>BufferedStream</h3><p>Envuelve otro stream para hacerlo <b>más eficiente</b>.</p></div>
+      <div class="card"><h3>NetworkStream</h3><p>Bytes desde/hacia un <b>socket de red</b> (IP + puerto).</p></div>
+      <div class="card"><h3>PipeStream</h3><p>Bytes entre <b>procesos</b> distintos.</p></div>
+      <div class="card"><h3>CryptoStream</h3><p>Vincula flujos a <b>transformaciones criptográficas</b>.</p></div>
+    </div>
+  </section>
+
+  <!-- 16. FileStream: propiedades y métodos -->
+  <section class="slide" data-chapter="FileStream" data-topic="Propiedades y métodos">
+    <div class="slide-eyebrow">FileStream</div>
+    <h2 class="slide-title">FileStream: propiedades y métodos</h2>
+    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.1fr 0.9fr; align-items: center;">
+      <table class="tbl" style="font-size:14px;">
+        <thead><tr><th>Miembro</th><th>Qué indica / hace</th></tr></thead>
+        <tbody>
+          <tr><td><code>CanRead</code> / <code>CanWrite</code></td><td>Si admite lectura / escritura.</td></tr>
+          <tr><td><code>CanSeek</code></td><td>Si admite búsquedas (mover la posición).</td></tr>
+          <tr><td><code>Length</code></td><td>Longitud (tamaño) de los datos.</td></tr>
+          <tr><td><code>Position</code></td><td>Posición actual dentro del flujo.</td></tr>
+          <tr><td><code>Read(buffer, ini, n)</code></td><td>Lee bytes al buffer; avanza la posición.</td></tr>
+          <tr><td><code>Seek(pos, origen)</code></td><td>Mueve la posición dentro del flujo.</td></tr>
+        </tbody>
+      </table>
+      <div class="card imgcard">
+        <img src="img/image13.png" alt="StreamReader/Writer y FileStream con un archivo físico" />
+        <div class="imgcaption">FileStream mueve <b>bytes</b>; los Reader/Writer trabajan con <b>texto</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17. FileStream: FileMode -->
+  <section class="slide" data-chapter="FileStream" data-topic="FileMode y abrir">
+    <div class="slide-eyebrow">FileStream · Apertura</div>
+    <h2 class="slide-title">FileMode: cómo se abre</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>El enum FileMode</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">public enum</span> <span class="t">FileMode</span>
+{
+   CreateNew,    <span class="c">// crea; falla si existe</span>
+   Create,       <span class="c">// crea o reemplaza</span>
+   Open,         <span class="c">// abre existente</span>
+   OpenOrCreate, <span class="c">// abre o crea</span>
+   Truncate,     <span class="c">// abre y vacía</span>
+   Append        <span class="c">// abre y agrega al final</span>
+}</pre>
+      </div>
+      <div class="card">
+        <h3>Abrir un archivo</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// con el constructor</span>
+<span class="t">FileStream</span> fs =
+   <span class="k">new</span> <span class="t">FileStream</span>(ruta, <span class="t">FileMode</span>.Open);
+
+<span class="c">// o con File.Open</span>
+<span class="t">FileStream</span> fs2 =
+   <span class="t">File</span>.Open(ruta, <span class="t">FileMode</span>.Open);</pre>
+        <p class="small-note" style="margin-top:10px;">Al terminar: <code>fs.Close()</code> libera el archivo (o usá <code>using</code>).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18. FileStream: leer bytes y convertir a texto -->
+  <section class="slide" data-chapter="FileStream" data-topic="Leer y convertir">
+    <div class="slide-eyebrow">FileStream · Lectura</div>
+    <h2 class="slide-title">Leer bytes y convertir a texto</h2>
+    <pre class="code" style="margin-top: 6px;"><span class="k">using</span> (<span class="t">FileStream</span> fs = <span class="k">new</span> <span class="t">FileStream</span>(ruta, <span class="t">FileMode</span>.Open))
+{
+   <span class="t">byte</span>[] buffer = <span class="k">new</span> <span class="t">byte</span>[<span class="n">128</span>];
+   <span class="t">int</span> leidos = fs.Read(buffer, <span class="n">0</span>, <span class="n">128</span>);   <span class="c">// avanza Position</span>
+
+   <span class="c">// los bytes son binarios: para usarlos como texto, se convierten</span>
+   <span class="t">string</span> texto = <span class="t">Encoding</span>.UTF8.GetString(buffer, <span class="n">0</span>, leidos);
+
+   fs.Seek(<span class="n">0</span>, <span class="t">SeekOrigin</span>.Begin);   <span class="c">// volver al inicio</span>
+}  <span class="c">// el using cierra el stream y libera recursos</span></pre>
+    <div class="callout" style="margin-top: 14px;">Los datos que devuelve <code>FileStream</code> son <b>bytes</b>. Para tratarlos como texto se aplica una conversión con <code>Encoding</code>.</div>
+  </section>
+
+  <!-- 19. Helpers -->
+  <section class="slide" data-chapter="Helpers" data-topic="Clases auxiliares">
+    <div class="slide-eyebrow">Clases auxiliares</div>
+    <h2 class="slide-title">Helpers para leer y escribir</h2>
+    <p class="subtitle">Clases de más alto nivel que evitan trabajar con bytes a mano.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card">
+        <h3>Texto</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.8;">
+          <li><b>StreamReader</b>: lee caracteres de un flujo (convierte bytes → texto).</li>
+          <li><b>StreamWriter</b>: escribe cadenas a un flujo (texto → bytes).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Binario</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.8;">
+          <li><b>BinaryReader</b>: lee tipos primitivos desde bytes.</li>
+          <li><b>BinaryWriter</b>: escribe tipos primitivos en binario.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="small-note">Funcionan sobre cualquier stream (FileStream, MemoryStream, etc.).</p>
+  </section>
+
+  <!-- 20. Ejemplo práctico -->
+  <section class="slide" data-chapter="Práctica" data-topic="Leer y escribir texto">
+    <div class="slide-eyebrow">Manos a la obra</div>
+    <h2 class="slide-title">Leer y escribir un archivo de texto</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>Lo simple: clase File</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// crear el directorio si no existe</span>
+<span class="k">if</span> (!<span class="t">Directory</span>.Exists(carpeta))
+   <span class="t">Directory</span>.CreateDirectory(carpeta);
+
+<span class="c">// escribir y leer todo de una</span>
+<span class="t">File</span>.WriteAllLines(ruta, lineas);
+<span class="t">string</span>[] leidas = <span class="t">File</span>.ReadAllLines(ruta);</pre>
+      </div>
+      <div class="card">
+        <h3>Con streams: StreamWriter / Reader</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">using</span> (<span class="k">var</span> sw = <span class="k">new</span> <span class="t">StreamWriter</span>(ruta))
+   sw.WriteLine(<span class="s">"Hola archivo"</span>);
+
+<span class="k">using</span> (<span class="k">var</span> sr = <span class="k">new</span> <span class="t">StreamReader</span>(ruta))
+{
+   <span class="t">string</span>? l;
+   <span class="k">while</span> ((l = sr.ReadLine()) != <span class="k">null</span>)
+      <span class="t">Console</span>.WriteLine(l);
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21. Cierre -->
+  <section class="slide" data-chapter="Cierre" data-topic="Repaso y ejercicios">
+    <h2 class="slide-title">Repaso &amp; ejercicios</h2>
+    <div class="two-col-content" style="margin-top: 14px;">
+      <div class="col">
+        <h4>En una línea</h4>
+        <p class="subtitle" style="font-size: 18px; color: var(--text);">Usá <b>File</b>/<b>Directory</b> para lo simple, <b>StreamReader/Writer</b> para texto, y <b>FileStream</b> + <code>Encoding</code> cuando necesitás controlar los bytes.</p>
+        <h4 style="margin-top: 20px;">Ejercicios</h4>
+        <ul class="bullets" style="font-size: 16px;">
+          <li>Crear un directorio si no existe y un archivo dentro.</li>
+          <li>Leer un CSV con nombre, apellido y edad.</li>
+          <li>Con <code>FileStream</code>, leer la etiqueta ID3 de un MP3.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4>Bibliografía</h4>
+        <ul class="bullets" style="font-size: 15px;">
+          <li><code>System.IO</code> — docs.microsoft.com/dotnet/api/system.io</li>
+          <li><code>Stream</code> / <code>FileStream</code> — docs de .NET</li>
+          <li>Extensiones y cabeceras — welivesecurity.com</li>
+        </ul>
+        <div class="callout" style="margin-top: 18px;"><b>¿Preguntas?</b></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/Spktro/slidedeck@v1/deck.js"></script>
+</body>
+</html>
