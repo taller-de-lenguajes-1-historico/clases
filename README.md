@@ -6,6 +6,7 @@ Material de clases: presentaciones (slides en HTML) y proyectos de ejemplo ejecu
 
 | Clase | Tema | Material |
 |-------|------|----------|
+| 6 | Clases (POO: miembros, métodos, visibilidad, clase estática) | [clase-06-clases](./clase-06-clases) |
 | 7 | Colecciones en C# (arreglos, genéricos, colecciones, enum) | [clase-07-colecciones](./clase-07-colecciones) |
 
 ## Estructura
