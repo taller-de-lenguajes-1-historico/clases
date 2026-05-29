@@ -141,17 +141,32 @@
   .filmstrip.open { transform: translateX(0); }
   .filmstrip:hover { transform: translateX(0); }
   .thumb {
+    flex: 0 0 auto;
+    width: 208px;
+    display: flex; flex-direction: column; gap: 5px;
+    border: 0; background: transparent; padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+  .thumb-frame {
     position: relative;
     width: 208px; height: 117px;
-    flex: 0 0 auto;
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
     background: var(--bg);
-    cursor: pointer; padding: 0;
   }
-  .thumb:hover { border-color: var(--accent); }
-  .thumb.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb:hover .thumb-frame { border-color: var(--accent); }
+  .thumb.current .thumb-frame { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb-label { padding: 0 2px 2px; line-height: 1.25; }
+  .thumb-chapter {
+    display: block;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .thumb-topic { display: block; font-size: 11px; color: var(--text); }
+  .thumb.current .thumb-topic { font-weight: 700; }
   .thumb-canvas {
     position: absolute; top: 0; left: 0;
     width: 1280px; height: 720px;
@@ -480,7 +495,7 @@
 <div class="deck" id="deck">
 
   <!-- 1. Título -->
-  <section class="slide title-slide active">
+  <section class="slide title-slide active" data-chapter="Introducción" data-topic="Portada">
     <div class="title-grid">
       <div>
         <div class="slide-eyebrow">Clase Nro 7</div>
@@ -500,7 +515,7 @@
   </section>
 
   <!-- 2. Trabajando con grupos de datos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Introducción" data-topic="Trabajando con grupos de datos">
     <div class="slide-eyebrow">Introducción</div>
     <h2 class="slide-title">Trabajando con grupos de datos</h2>
     <p class="subtitle">En muchas aplicaciones es necesario crear y administrar grupos de objetos relacionados. En C# hay dos formas de agruparlos.</p>
@@ -521,7 +536,7 @@
   </section>
 
   <!-- 3. Arreglos — qué es (con imagen) -->
-  <section class="slide">
+  <section class="slide" data-chapter="Arreglos" data-topic="¿Qué es un arreglo?">
     <div class="slide-eyebrow">Arreglos</div>
     <h2 class="slide-title">¿Qué es un arreglo?</h2>
     <p class="subtitle">Un arreglo es un grupo de variables del <b>mismo tipo de dato</b> a las que nos referimos con un nombre común. A cada variable la llamamos <b>elemento</b>.</p>
@@ -543,7 +558,7 @@
   </section>
 
   <!-- 4. Arreglos — imágenes como tensores -->
-  <section class="slide">
+  <section class="slide" data-chapter="Arreglos" data-topic="Una imagen es un arreglo">
     <div class="slide-eyebrow">Arreglos · En el mundo real</div>
     <h2 class="slide-title">Una imagen es un arreglo</h2>
     <p class="subtitle">Cualquier imagen en color se representa como un <b>tensor de tercer orden</b>: sus tres dimensiones son alto, ancho y color (canales RGB).</p>
@@ -560,7 +575,7 @@
   </section>
 
   <!-- 5. Arreglos — sintaxis -->
-  <section class="slide">
+  <section class="slide" data-chapter="Arreglos" data-topic="Declaración">
     <div class="slide-eyebrow">Arreglos · Sintaxis</div>
     <h2 class="slide-title">Declaración de un arreglo</h2>
     <pre class="code" style="margin-top: 6px;"><span class="t">&lt;Tipo de dato&gt;</span> [ ] <span class="n">Nombre_del_arreglo</span>;</pre>
@@ -585,7 +600,7 @@
   </section>
 
   <!-- 6. Arreglos — inicialización -->
-  <section class="slide">
+  <section class="slide" data-chapter="Arreglos" data-topic="Inicialización">
     <div class="slide-eyebrow">Arreglos · Inicialización</div>
     <h2 class="slide-title">Declaración e inicialización</h2>
     <p class="subtitle">Un arreglo es un <b>reference type</b> (tipo por referencia), por lo que se usa la palabra clave <code>new</code> para crear una instancia.</p>
@@ -598,7 +613,7 @@
   </section>
 
   <!-- 7. Arreglos — a tener en cuenta -->
-  <section class="slide">
+  <section class="slide" data-chapter="Arreglos" data-topic="Puntos clave">
     <div class="slide-eyebrow">Arreglos · A tener en cuenta</div>
     <h2 class="slide-title">Puntos clave de los arreglos</h2>
     <ul class="bullets" style="font-size: 19px; margin-top: 8px;">
@@ -612,7 +627,7 @@
   </section>
 
   <!-- 8. Genéricos — qué es -->
-  <section class="slide">
+  <section class="slide" data-chapter="Genéricos" data-topic="¿Qué es un genérico?">
     <div class="slide-eyebrow">Genéricos</div>
     <h2 class="slide-title">¿Qué es un genérico?</h2>
     <p class="subtitle">Es un <b>contenedor para un tipo de dato específico</b>, usado al crear una instancia de una variable genérica. El tipo se define recién al instanciar.</p>
@@ -637,7 +652,7 @@
   </section>
 
   <!-- 9. Genéricos — implementación -->
-  <section class="slide">
+  <section class="slide" data-chapter="Genéricos" data-topic="Implementación">
     <div class="slide-eyebrow">Genéricos · Implementación</div>
     <h2 class="slide-title">Sustitución del tipo genérico</h2>
     <div class="columns" style="margin-top: 8px;">
@@ -669,7 +684,7 @@
   </section>
 
   <!-- 9b. Genéricos — ejemplo práctico -->
-  <section class="slide">
+  <section class="slide" data-chapter="Genéricos" data-topic="Ejemplo: Pila&lt;T&gt;">
     <div class="slide-eyebrow">Genéricos · Ejemplo práctico</div>
     <h2 class="slide-title">Una pila genérica reutilizable</h2>
     <p class="subtitle">Definimos <b>una sola vez</b> una <code>Pila&lt;T&gt;</code> y la usamos con cualquier tipo: <code>string</code>, <code>int</code>, objetos propios…</p>
@@ -712,7 +727,7 @@ numeros.Apilar(<span class="n">20</span>);
   </section>
 
   <!-- 10. Colecciones — intro (con imagen de interfaces) -->
-  <section class="slide">
+  <section class="slide" data-chapter="Colecciones" data-topic="Introducción">
     <div class="slide-eyebrow">Colecciones</div>
     <h2 class="slide-title">Colecciones</h2>
     <div class="columns" style="margin-top: 6px; grid-template-columns: 1fr 1.1fr; align-items: center;">
@@ -728,7 +743,7 @@ numeros.Apilar(<span class="n">20</span>);
   </section>
 
   <!-- 11. Colecciones — espacios de nombre -->
-  <section class="slide">
+  <section class="slide" data-chapter="Colecciones" data-topic="Espacios de nombre">
     <div class="slide-eyebrow">Colecciones · Espacios de nombre</div>
     <h2 class="slide-title">¿Dónde viven las colecciones?</h2>
     <p class="subtitle">El .NET Framework provee muchas colecciones comunes, cada una diseñada para un propósito específico. Pertenecen a estos espacios de nombre:</p>
@@ -752,7 +767,7 @@ numeros.Apilar(<span class="n">20</span>);
   </section>
 
   <!-- 12. Colecciones — tipos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Colecciones" data-topic="Tipos de colecciones">
     <div class="slide-eyebrow">Colecciones · System.Collections.Generic</div>
     <h2 class="slide-title">Tipos de colecciones más usadas</h2>
     <table class="tbl" style="margin-top: 14px;">
@@ -779,7 +794,7 @@ numeros.Apilar(<span class="n">20</span>);
   </section>
 
   <!-- 13. Colecciones — uso -->
-  <section class="slide">
+  <section class="slide" data-chapter="Colecciones" data-topic="Uso">
     <div class="slide-eyebrow">Colecciones · Uso</div>
     <h2 class="slide-title">Instanciar y agregar elementos</h2>
     <p class="subtitle">Una colección es una <b>clase</b>: hay que declarar una instancia antes de poder agregarle elementos.</p>
@@ -808,7 +823,7 @@ MiDiccionario.Add(<span class="n">1</span>, <span class="s">"Opción 1"</span>);
   </section>
 
   <!-- 13b. Listas — ejemplos básicos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Listas" data-topic="Ejemplos básicos">
     <div class="slide-eyebrow">Colecciones · List&lt;T&gt;</div>
     <h2 class="slide-title">Ejemplos con listas</h2>
     <p class="subtitle"><code>List&lt;T&gt;</code> es la colección genérica más usada: una lista de tamaño dinámico accesible por índice.</p>
@@ -844,7 +859,7 @@ frutas.Add(<span class="s">"Naranja"</span>);
   </section>
 
   <!-- 13c. Listas — más operaciones -->
-  <section class="slide">
+  <section class="slide" data-chapter="Listas" data-topic="Más operaciones">
     <div class="slide-eyebrow">Colecciones · List&lt;T&gt;</div>
     <h2 class="slide-title">Listas: más operaciones</h2>
     <p class="subtitle">Además de agregar, <code>List&lt;T&gt;</code> provee métodos para buscar, insertar, quitar y ordenar.</p>
@@ -884,7 +899,7 @@ numeros.Clear();</pre>
   </section>
 
   <!-- 13d. Listas — formas de recorrer (iteradores) -->
-  <section class="slide">
+  <section class="slide" data-chapter="Listas" data-topic="Iteradores">
     <div class="slide-eyebrow">Colecciones · Iteradores</div>
     <h2 class="slide-title">Formas de recorrer una lista</h2>
     <p class="subtitle">Una lista se puede recorrer de varias maneras. Todas terminan apoyándose en el mismo mecanismo: el <b>enumerador</b>.</p>
@@ -926,7 +941,7 @@ numeros.Clear();</pre>
   </section>
 
   <!-- 13e. Listas de objetos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Listas" data-topic="Listas de objetos">
     <div class="slide-eyebrow">Colecciones · List&lt;Persona&gt;</div>
     <h2 class="slide-title">Listas de objetos</h2>
     <p class="subtitle">Una lista no se limita a tipos simples: puede guardar instancias de una <b>clase propia</b>.</p>
@@ -965,7 +980,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   </section>
 
   <!-- 13f. Listas — LINQ simple -->
-  <section class="slide">
+  <section class="slide" data-chapter="Listas" data-topic="LINQ">
     <div class="slide-eyebrow">Colecciones · LINQ</div>
     <h2 class="slide-title">Consultar listas con LINQ</h2>
     <p class="subtitle">LINQ permite consultar colecciones de forma <b>declarativa</b>, reemplazando los <code>foreach</code> de filtrado por expresiones más cortas.</p>
@@ -1001,7 +1016,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   </section>
 
   <!-- 14. Enum -->
-  <section class="slide">
+  <section class="slide" data-chapter="Enum" data-topic="Enumeraciones">
     <div class="slide-eyebrow">Enum</div>
     <h2 class="slide-title">Enumeraciones</h2>
     <p class="subtitle">Estructura de datos de tipo <b>valor</b>. Permite declarar una lista de constantes con nombre y referirnos a cada una por un identificador que las agrupa.</p>
@@ -1035,7 +1050,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   </section>
 
   <!-- 15. Enum FLAG -->
-  <section class="slide">
+  <section class="slide" data-chapter="Enum" data-topic="Flags">
     <div class="slide-eyebrow">Enum · Flags</div>
     <h2 class="slide-title">Enum como combinación de opciones</h2>
     <p class="subtitle">Con el decorador <code>[Flags]</code>, un enum puede representar una <b>combinación de elecciones</b>. Cada miembro se comporta como un campo de bits (potencias de 2).</p>
@@ -1066,7 +1081,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   </section>
 
   <!-- 16. Documentación -->
-  <section class="slide">
+  <section class="slide" data-chapter="Buena práctica" data-topic="Documentación oficial">
     <div class="slide-eyebrow">Buena práctica</div>
     <h2 class="slide-title">Usá la documentación oficial</h2>
     <p class="subtitle" style="max-width: 880px;">Sumamente importante: consultar siempre la documentación oficial del framework, librería o API con la que estés trabajando.</p>
@@ -1077,7 +1092,7 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
   </section>
 
   <!-- 17. Recap + Bibliografía -->
-  <section class="slide">
+  <section class="slide" data-chapter="Cierre" data-topic="Repaso y bibliografía">
     <h2 class="slide-title">Repaso &amp; Bibliografía</h2>
     <div class="two-col-content" style="margin-top: 14px;">
       <div class="col">
@@ -1261,6 +1276,9 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
       const thumb = document.createElement('button');
       thumb.type = 'button';
       thumb.className = 'thumb';
+
+      const frame = document.createElement('div');
+      frame.className = 'thumb-frame';
       const canvas = document.createElement('div');
       canvas.className = 'thumb-canvas';
       const clone = s.cloneNode(true);
@@ -1269,11 +1287,31 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
       clone.removeAttribute('id');
       clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
       canvas.appendChild(clone);
-      thumb.appendChild(canvas);
+      frame.appendChild(canvas);
       const num = document.createElement('span');
       num.className = 'thumb-num';
       num.textContent = n + 1;
-      thumb.appendChild(num);
+      frame.appendChild(num);
+      thumb.appendChild(frame);
+
+      const chapter = s.dataset.chapter || s.querySelector('.slide-eyebrow')?.textContent || '';
+      const topic = s.dataset.topic || s.querySelector('.slide-title, .title')?.textContent || '';
+      const label = document.createElement('div');
+      label.className = 'thumb-label';
+      if (chapter) {
+        const c = document.createElement('span');
+        c.className = 'thumb-chapter';
+        c.textContent = chapter;
+        label.appendChild(c);
+      }
+      if (topic) {
+        const t = document.createElement('span');
+        t.className = 'thumb-topic';
+        t.textContent = topic;
+        label.appendChild(t);
+      }
+      thumb.appendChild(label);
+
       thumb.addEventListener('click', (e) => { e.stopPropagation(); show(n); });
       film.appendChild(thumb);
       thumbEls.push(thumb);

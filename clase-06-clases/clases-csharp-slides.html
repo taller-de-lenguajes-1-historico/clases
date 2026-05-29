@@ -141,17 +141,32 @@
   .filmstrip.open { transform: translateX(0); }
   .filmstrip:hover { transform: translateX(0); }
   .thumb {
+    flex: 0 0 auto;
+    width: 208px;
+    display: flex; flex-direction: column; gap: 5px;
+    border: 0; background: transparent; padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+  .thumb-frame {
     position: relative;
     width: 208px; height: 117px;
-    flex: 0 0 auto;
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
     background: var(--bg);
-    cursor: pointer; padding: 0;
   }
-  .thumb:hover { border-color: var(--accent); }
-  .thumb.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb:hover .thumb-frame { border-color: var(--accent); }
+  .thumb.current .thumb-frame { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb-label { padding: 0 2px 2px; line-height: 1.25; }
+  .thumb-chapter {
+    display: block;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .thumb-topic { display: block; font-size: 11px; color: var(--text); }
+  .thumb.current .thumb-topic { font-weight: 700; }
   .thumb-canvas {
     position: absolute; top: 0; left: 0;
     width: 1280px; height: 720px;
@@ -335,7 +350,7 @@
 <div class="deck" id="deck">
 
   <!-- 1. Título -->
-  <section class="slide title-slide active">
+  <section class="slide title-slide active" data-chapter="Introducción" data-topic="Portada">
     <div class="title-grid">
       <div>
         <div class="slide-eyebrow">Clase Nro 6</div>
@@ -355,7 +370,7 @@
   </section>
 
   <!-- 2. POO -->
-  <section class="slide">
+  <section class="slide" data-chapter="Introducción" data-topic="Programación orientada a objetos">
     <div class="slide-eyebrow">Introducción</div>
     <h2 class="slide-title">Programación orientada a objetos</h2>
     <div class="columns" style="margin-top: 8px; grid-template-columns: 1.3fr 0.7fr; align-items: center;">
@@ -379,7 +394,7 @@
   </section>
 
   <!-- 3. Declarar una clase -->
-  <section class="slide">
+  <section class="slide" data-chapter="La clase" data-topic="Declarar una clase">
     <div class="slide-eyebrow">Clase · Declaración</div>
     <h2 class="slide-title">Declarar una clase</h2>
     <p class="subtitle">Declaramos una nueva clase llamada <code>MiClase</code>. Si venís de C, es la evolución del <code>struct</code>: además de datos, agrupa comportamiento.</p>
@@ -404,7 +419,7 @@
   </section>
 
   <!-- 4. Crear objetos -->
-  <section class="slide">
+  <section class="slide" data-chapter="La clase" data-topic="Crear objetos">
     <div class="slide-eyebrow">Clase · Objetos</div>
     <h2 class="slide-title">Crear objetos (instancias)</h2>
     <pre class="code" style="margin-top: 6px;"><span class="t">MiClase</span> MiInstancia = <span class="k">new</span> <span class="t">MiClase</span>();</pre>
@@ -422,7 +437,7 @@
   </section>
 
   <!-- 5. Campos / atributos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Miembros" data-topic="Campos o atributos">
     <div class="slide-eyebrow">Miembros · Campos</div>
     <h2 class="slide-title">Campos o atributos</h2>
     <p class="subtitle">Llamamos <b>campo</b> (o atributo) a una variable declarada dentro de una clase. Representan el <b>estado</b> del objeto.</p>
@@ -446,7 +461,7 @@ MiInstancia.x = <span class="n">10</span>;</pre>
   </section>
 
   <!-- 6. Visibilidad -->
-  <section class="slide">
+  <section class="slide" data-chapter="Miembros" data-topic="Visibilidad">
     <div class="slide-eyebrow">Miembros · Visibilidad</div>
     <h2 class="slide-title">Visibilidad: público vs privado</h2>
     <div class="columns" style="margin-top: 8px;">
@@ -480,7 +495,7 @@ schnauzer.edad = <span class="n">10</span>;   <span class="c">// ERROR ✗</span
   </section>
 
   <!-- 7. Propiedades -->
-  <section class="slide">
+  <section class="slide" data-chapter="Miembros" data-topic="Propiedades">
     <div class="slide-eyebrow">Miembros · Propiedades</div>
     <h2 class="slide-title">Propiedades (getters y setters)</h2>
     <div class="columns" style="margin-top: 8px; grid-template-columns: 1.1fr 0.9fr; align-items: center;">
@@ -514,7 +529,7 @@ schnauzer.edad = <span class="n">10</span>;   <span class="c">// ERROR ✗</span
   </section>
 
   <!-- 8. Métodos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Miembros" data-topic="Métodos">
     <div class="slide-eyebrow">Métodos</div>
     <h2 class="slide-title">Métodos</h2>
     <p class="subtitle">Un <b>método</b> es un bloque de código con instrucciones. Llamarlo en un objeto es como acceder a un campo: nombre del objeto + <code>.</code> + nombre del método + <code>()</code>.</p>
@@ -545,7 +560,7 @@ fangio.Edad = <span class="n">3</span>;
   </section>
 
   <!-- 9. Constructor -->
-  <section class="slide">
+  <section class="slide" data-chapter="Miembros" data-topic="Constructor">
     <div class="slide-eyebrow">Métodos · Constructor</div>
     <h2 class="slide-title">El constructor</h2>
     <div class="columns" style="margin-top: 8px; grid-template-columns: 1.2fr 0.8fr; align-items: center;">
@@ -572,7 +587,7 @@ fangio.Edad = <span class="n">3</span>;
   </section>
 
   <!-- 10. Ejemplo práctico: clase Player (el molde) -->
-  <section class="slide">
+  <section class="slide" data-chapter="Ejemplo: Player" data-topic="La clase es un molde">
     <div class="slide-eyebrow">Ejemplo práctico</div>
     <h2 class="slide-title">La clase es un <span style="color:var(--accent)">molde</span></h2>
     <p class="subtitle">La clase <code>Player</code> es el <b>plano</b>: describe qué datos y qué comportamiento tendrá <i>cualquier</i> jugador. Por sí sola no es nadie todavía.</p>
@@ -599,7 +614,7 @@ fangio.Edad = <span class="n">3</span>;
   </section>
 
   <!-- 11. Del molde a los objetos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Ejemplo: Player" data-topic="Del molde a los objetos">
     <div class="slide-eyebrow">Ejemplo práctico · Molde → objetos</div>
     <h2 class="slide-title">Del molde a lo concreto</h2>
     <p class="subtitle">Con <code>new</code> creamos <b>objetos</b>: cosas concretas. Del mismo molde salen jugadores independientes, cada uno con su propio estado.</p>
@@ -625,7 +640,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 12. El salto: una parábola -->
-  <section class="slide">
+  <section class="slide" data-chapter="Ejemplo: Player" data-topic="El salto (parábola)">
     <div class="slide-eyebrow">Ejemplo práctico · Comportamiento</div>
     <h2 class="slide-title">El salto es una parábola</h2>
     <p class="subtitle">Saltar no es teletransportarse: un <b>impulso</b> hacia arriba y la <b>gravedad</b> que lo frena, cuadro a cuadro, dibujan una parábola.</p>
@@ -681,7 +696,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 13. Organización: jerarquía proyecto/namespace/clase -->
-  <section class="slide">
+  <section class="slide" data-chapter="Organización" data-topic="Proyecto, namespace, clase">
     <div class="slide-eyebrow">Organización del código</div>
     <h2 class="slide-title">Proyecto → namespace → clase</h2>
     <p class="subtitle">El código se organiza en tres niveles que se contienen uno a otro, del más grande al más chico.</p>
@@ -717,7 +732,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 13b. Namespaces en la práctica -->
-  <section class="slide">
+  <section class="slide" data-chapter="Organización" data-topic="Namespaces">
     <div class="slide-eyebrow">Organización · Namespaces</div>
     <h2 class="slide-title">Namespaces en la práctica</h2>
     <p class="subtitle">Se <b>declaran</b> con <code>namespace</code> y se <b>usan</b> desde otro lado con <code>using</code>.</p>
@@ -742,7 +757,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 14. Anatomía de una clase -->
-  <section class="slide">
+  <section class="slide" data-chapter="Resumen" data-topic="Anatomía de una clase">
     <div class="slide-eyebrow">Resumen</div>
     <h2 class="slide-title">Anatomía de una clase</h2>
     <p class="subtitle">Las clases representan <b>entidades o conceptos</b>, como los sustantivos del lenguaje. Cada clase es un modelo con dos partes:</p>
@@ -762,7 +777,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 15. Clase estática -->
-  <section class="slide">
+  <section class="slide" data-chapter="Clase estática" data-topic="Clases estáticas">
     <div class="slide-eyebrow">Clase estática</div>
     <h2 class="slide-title">Clases estáticas</h2>
     <p class="subtitle">Una clase <b>estática</b> no se puede instanciar (no usa <code>new</code>): solo agrupa <b>miembros estáticos</b>. Útil para utilidades y helpers.</p>
@@ -793,7 +808,7 @@ luigi.Vidas = <span class="n">3</span>;</pre>
   </section>
 
   <!-- 16. Repaso & cierre -->
-  <section class="slide">
+  <section class="slide" data-chapter="Cierre" data-topic="Repaso">
     <h2 class="slide-title">Repaso &amp; cierre</h2>
     <div class="two-col-content" style="margin-top: 14px;">
       <div class="col">
@@ -972,6 +987,9 @@ luigi.Vidas = <span class="n">3</span>;</pre>
       const thumb = document.createElement('button');
       thumb.type = 'button';
       thumb.className = 'thumb';
+
+      const frame = document.createElement('div');
+      frame.className = 'thumb-frame';
       const canvas = document.createElement('div');
       canvas.className = 'thumb-canvas';
       const clone = s.cloneNode(true);
@@ -980,11 +998,31 @@ luigi.Vidas = <span class="n">3</span>;</pre>
       clone.removeAttribute('id');
       clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
       canvas.appendChild(clone);
-      thumb.appendChild(canvas);
+      frame.appendChild(canvas);
       const num = document.createElement('span');
       num.className = 'thumb-num';
       num.textContent = n + 1;
-      thumb.appendChild(num);
+      frame.appendChild(num);
+      thumb.appendChild(frame);
+
+      const chapter = s.dataset.chapter || s.querySelector('.slide-eyebrow')?.textContent || '';
+      const topic = s.dataset.topic || s.querySelector('.slide-title, .title')?.textContent || '';
+      const label = document.createElement('div');
+      label.className = 'thumb-label';
+      if (chapter) {
+        const c = document.createElement('span');
+        c.className = 'thumb-chapter';
+        c.textContent = chapter;
+        label.appendChild(c);
+      }
+      if (topic) {
+        const t = document.createElement('span');
+        t.className = 'thumb-topic';
+        t.textContent = topic;
+        label.appendChild(t);
+      }
+      thumb.appendChild(label);
+
       thumb.addEventListener('click', (e) => { e.stopPropagation(); show(n); });
       film.appendChild(thumb);
       thumbEls.push(thumb);
