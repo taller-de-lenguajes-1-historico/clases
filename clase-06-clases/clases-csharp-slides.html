@@ -441,69 +441,111 @@ fangio.Edad = <span class="n">3</span>;
     </div>
   </section>
 
-  <!-- 10. Ejemplo práctico: clase Player -->
+  <!-- 10. Ejemplo práctico: clase Player (el molde) -->
   <section class="slide">
     <div class="slide-eyebrow">Ejemplo práctico</div>
-    <h2 class="slide-title">La clase Player</h2>
-    <p class="subtitle">Agrupamos un conjunto de elementos con características comunes: un jugador tiene <b>posición</b> y <b>vidas</b> (datos), y puede <b>saltar</b> (comportamiento).</p>
-    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.3fr 0.7fr; align-items: center;">
+    <h2 class="slide-title">La clase es un <span style="color:var(--accent)">molde</span></h2>
+    <p class="subtitle">La clase <code>Player</code> es el <b>plano</b>: describe qué datos y qué comportamiento tendrá <i>cualquier</i> jugador. Por sí sola no es nadie todavía.</p>
+    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.35fr 0.65fr; align-items: center;">
       <div class="card">
         <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">public class</span> <span class="t">Player</span>
 {
-   <span class="k">public</span> <span class="t">float</span> PosicionX;
+   <span class="c">// datos (estado)</span>
    <span class="k">public</span> <span class="t">float</span> PosicionY;
-   <span class="k">public</span> <span class="t">int</span> Vidas;
+   <span class="k">public</span> <span class="t">float</span> VelocidadY;
+   <span class="k">public</span> <span class="t">bool</span>  EnElSuelo = <span class="k">true</span>;
+   <span class="k">public</span> <span class="t">int</span>   Vidas = <span class="n">3</span>;
 
-   <span class="k">public void</span> Saltar()
-   {
-      PosicionX += <span class="n">5</span>;
-      PosicionY += <span class="n">10</span>;
-   }
+   <span class="c">// comportamiento</span>
+   <span class="k">public void</span> Saltar() { ... }
+   <span class="k">public void</span> Actualizar(<span class="t">float</span> dt) { ... }
 }</pre>
       </div>
       <div class="card imgcard">
-        <img src="img/image4.png" alt="La clase Player (molde)" style="max-height: 250px;" />
-        <div class="imgcaption">La clase es el <b>molde</b>: define los datos y el comportamiento, pero todavía no es un objeto concreto.</div>
+        <img src="img/image4.png" alt="La clase Player (molde)" style="max-height: 260px;" />
+        <div class="imgcaption">El <b>molde</b>: define la forma, pero no existe ningún jugador concreto.</div>
       </div>
     </div>
   </section>
 
-  <!-- 11. Instancias Mario y Luigi -->
+  <!-- 11. Del molde a los objetos -->
   <section class="slide">
-    <div class="slide-eyebrow">Ejemplo práctico · Instancias</div>
-    <h2 class="slide-title">Dos objetos del mismo molde</h2>
-    <p class="subtitle">Del mismo <code>Player</code> creamos instancias independientes: cada una tiene su propio estado.</p>
-    <div class="columns" style="margin-top: 10px;">
+    <div class="slide-eyebrow">Ejemplo práctico · Molde → objetos</div>
+    <h2 class="slide-title">Del molde a lo concreto</h2>
+    <p class="subtitle">Con <code>new</code> creamos <b>objetos</b>: cosas concretas. Del mismo molde salen jugadores independientes, cada uno con su propio estado.</p>
+    <div class="columns three" style="margin-top: 12px; align-items: stretch;">
       <div class="card imgcard">
-        <img src="img/image5.png" alt="Mario" style="max-height: 220px;" />
-        <pre class="code" style="margin:10px 0 0; font-size:13px; padding:12px 14px; width:100%;"><span class="t">Player</span> mario = <span class="k">new</span> <span class="t">Player</span>();
-mario.PosicionX = <span class="n">20</span>;
-mario.PosicionY = <span class="n">10</span>;
-mario.Vidas = <span class="n">3</span>;</pre>
+        <img src="img/image4.png" alt="Clase Player (molde)" style="max-height: 150px;" />
+        <div class="imgcaption"><b>Clase Player</b><br>el molde (abstracto)</div>
       </div>
       <div class="card imgcard">
-        <img src="img/image6.png" alt="Luigi" style="max-height: 220px;" />
-        <pre class="code" style="margin:10px 0 0; font-size:13px; padding:12px 14px; width:100%;"><span class="t">Player</span> luigi = <span class="k">new</span> <span class="t">Player</span>();
-luigi.PosicionX = <span class="n">30</span>;
-luigi.PosicionY = <span class="n">10</span>;
+        <img src="img/image5.png" alt="Mario" style="max-height: 150px;" />
+        <pre class="code" style="margin:10px 0 0; font-size:12px; padding:10px 12px; width:100%;"><span class="t">Player</span> mario =
+   <span class="k">new</span> <span class="t">Player</span>();
+mario.Vidas = <span class="n">5</span>;</pre>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image6.png" alt="Luigi" style="max-height: 150px;" />
+        <pre class="code" style="margin:10px 0 0; font-size:12px; padding:10px 12px; width:100%;"><span class="t">Player</span> luigi =
+   <span class="k">new</span> <span class="t">Player</span>();
 luigi.Vidas = <span class="n">3</span>;</pre>
       </div>
     </div>
+    <div class="callout" style="margin-top: 16px;">Un molde, muchos objetos. Son <b>independientes</b>: cambiar <code>mario.Vidas</code> no afecta a <code>luigi</code>.</div>
   </section>
 
-  <!-- 12. Usar un método -->
+  <!-- 12. El salto: una parábola -->
   <section class="slide">
-    <div class="slide-eyebrow">Ejemplo práctico · Métodos</div>
-    <h2 class="slide-title">Usar un método: Saltar()</h2>
-    <p class="subtitle">Llamar al método modifica el <b>estado</b> de ese objeto en particular (su posición).</p>
-    <div class="columns" style="margin-top: 10px;">
-      <div class="card imgcard">
-        <img src="img/image7.png" alt="Mario saltando" style="max-height: 230px;" />
-        <pre class="code" style="margin:10px 0 0; padding:12px 16px; width:100%;">mario.Saltar();</pre>
+    <div class="slide-eyebrow">Ejemplo práctico · Comportamiento</div>
+    <h2 class="slide-title">El salto es una parábola</h2>
+    <p class="subtitle">Saltar no es teletransportarse: un <b>impulso</b> hacia arriba y la <b>gravedad</b> que lo frena, cuadro a cuadro, dibujan una parábola.</p>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1.05fr 0.95fr; align-items: center;">
+      <div class="card">
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">const float</span> Gravedad = <span class="n">9.8f</span>;
+<span class="k">const float</span> Impulso  = <span class="n">20f</span>;
+
+<span class="k">public void</span> Saltar()
+{
+   <span class="k">if</span> (EnElSuelo)              <span class="c">// solo si está apoyado</span>
+   {
+      VelocidadY = Impulso;    <span class="c">// empuje hacia arriba</span>
+      EnElSuelo = <span class="k">false</span>;
+   }
+}
+
+<span class="k">public void</span> Actualizar(<span class="t">float</span> dt)
+{
+   VelocidadY -= Gravedad * dt;   <span class="c">// la gravedad frena</span>
+   PosicionY  += VelocidadY * dt;  <span class="c">// se mueve</span>
+   <span class="k">if</span> (PosicionY &lt;= <span class="n">0</span>) { PosicionY = <span class="n">0</span>; EnElSuelo = <span class="k">true</span>; }
+}</pre>
       </div>
       <div class="card imgcard">
-        <img src="img/image8.png" alt="Luigi saltando" style="max-height: 230px;" />
-        <pre class="code" style="margin:10px 0 0; padding:12px 16px; width:100%;">luigi.Saltar();</pre>
+        <img src="img/image7.png" alt="Mario saltando" style="max-height: 96px; margin-bottom: 6px;" />
+        <svg viewBox="0 0 470 230" style="width: 100%;">
+          <!-- ejes -->
+          <line x1="40" y1="200" x2="450" y2="200" stroke="#9aa3b2" stroke-width="1.5"/>
+          <line x1="40" y1="200" x2="40" y2="20" stroke="#9aa3b2" stroke-width="1.5"/>
+          <text x="8" y="30" fill="#5a6576" font-size="12">altura</text>
+          <text x="395" y="218" fill="#5a6576" font-size="12">tiempo</text>
+          <!-- parábola -->
+          <polyline points="40,200 90,130 140,80 190,50 240,40 290,50 340,80 390,130 440,200"
+                    fill="none" stroke="#7c3aed" stroke-width="3"/>
+          <!-- apex -->
+          <circle cx="240" cy="40" r="4" fill="#7c3aed"/>
+          <text x="240" y="30" fill="#7c3aed" font-size="11" font-weight="700" text-anchor="middle">velocidad = 0</text>
+          <!-- impulso -->
+          <line x1="40" y1="200" x2="40" y2="150" stroke="#2563eb" stroke-width="2" marker-end="url(#ah)"/>
+          <text x="48" y="160" fill="#2563eb" font-size="11">Saltar() ↑</text>
+          <!-- gravedad -->
+          <text x="300" y="150" fill="#5a6576" font-size="11">la gravedad la baja ↓</text>
+          <defs>
+            <marker id="ah" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+              <path d="M0,0 L8,4 L0,8 Z" fill="#2563eb"/>
+            </marker>
+          </defs>
+        </svg>
+        <div class="imgcaption">Cada <code>Actualizar(dt)</code> es un cuadro del juego; el conjunto traza la parábola.</div>
       </div>
     </div>
   </section>

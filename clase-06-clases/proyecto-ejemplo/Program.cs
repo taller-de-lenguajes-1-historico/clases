@@ -11,17 +11,23 @@ fangio.Edad = 3;            // propiedad (set)
 Console.WriteLine($"{fangio.Nombre} ({fangio.Raza}), edad {fangio.Edad}");
 Console.WriteLine($"Edad en años perro: {fangio.EdadEnAniosPerro()}");  // método
 
-// --- Player: instancias independientes del mismo molde ---
+// --- Player: dos objetos concretos del mismo molde ---
 Console.WriteLine("\n---- PLAYER ----");
-Player mario = new Player();
-mario.PosicionX = 20; mario.PosicionY = 10; mario.Vidas = 3;
+Player mario = new Player();   // objeto concreto
+Player luigi = new Player();   // otro objeto, estado independiente
+mario.Vidas = 5;
 
-Player luigi = new Player();
-luigi.PosicionX = 30; luigi.PosicionY = 10; luigi.Vidas = 3;
-
-mario.Saltar();   // modifica el estado de mario
-Console.WriteLine($"Mario tras saltar -> X={mario.PosicionX}, Y={mario.PosicionY}");
-Console.WriteLine($"Luigi sin saltar  -> X={luigi.PosicionX}, Y={luigi.PosicionY}");
+// El salto: impulso + gravedad cuadro a cuadro => parábola
+mario.Saltar();
+Console.WriteLine("Salto de Mario (altura por cuadro):");
+for (int frame = 0; frame < 8; frame++)
+{
+    mario.Actualizar(0.5f);   // dt = 0.5 s por cuadro
+    int barra = (int)(mario.PosicionY);
+    Console.WriteLine($"  t={frame * 0.5f:0.0}s  altura={mario.PosicionY,5:0.0}  {new string('█', Math.Max(0, barra))}");
+}
+Console.WriteLine($"Luigi no saltó -> altura={luigi.PosicionY}, enElSuelo={luigi.EnElSuelo}, vidas={luigi.Vidas}");
+Console.WriteLine($"(Mario tiene {mario.Vidas} vidas; cambiarlas no afectó a Luigi)");
 
 // --- Clase estática: sin instancias ---
 Console.WriteLine("\n---- CLASE ESTÁTICA ----");
