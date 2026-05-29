@@ -20,6 +20,27 @@
     --code-bg: #f6f8fa;
   }
 
+  /* Modo oscuro */
+  html[data-theme="dark"] {
+    --bg: #0f1115;
+    --panel: #161a22;
+    --panel-2: #1d222c;
+    --border: #2a3140;
+    --text: #e6e9ef;
+    --muted: #9aa3b2;
+    --accent: #b08cff;
+    --accent-2: #79b8ff;
+    --green: #4ade80;
+    --code-bg: #0f1320;
+  }
+  html[data-theme="dark"] pre.code { color: #d6deeb; }
+  html[data-theme="dark"] pre.code .c { color: #7f8aa3; }
+  html[data-theme="dark"] pre.code .k { color: #ff7b72; }
+  html[data-theme="dark"] pre.code .s { color: #9ece6a; }
+  html[data-theme="dark"] pre.code .t { color: #79b8ff; }
+  html[data-theme="dark"] pre.code .n { color: #f2cc60; }
+  html[data-theme="dark"] .filmstrip { background: rgba(22,26,34,0.95); }
+
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
@@ -77,6 +98,13 @@
   }
   .sizer button:hover { color: var(--accent); }
   .sizer button.on { background: var(--accent); color: #fff; }
+  .theme-toggle {
+    font-size: 14px; line-height: 1;
+    border: 0; background: transparent; cursor: pointer;
+    padding: 4px 8px; border-radius: 999px;
+  }
+  .theme-toggle:hover { background: var(--panel-2); }
+  .sizer-div { width: 1px; height: 18px; background: var(--border); margin: 0 3px; }
 
   /* Link al índice */
   .home-link {
@@ -1138,6 +1166,8 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
 
 <a class="home-link" href="../index.html">← Índice</a>
 <div class="sizer" id="sizer">
+  <button class="theme-toggle" id="themeBtn" type="button" title="Modo claro / oscuro" aria-label="Cambiar tema">🌙</button>
+  <span class="sizer-div"></span>
   <span class="lbl">Tamaño</span>
   <button data-size="fit">Ajustar</button>
   <button data-size="m">Cómodo</button>
@@ -1193,6 +1223,21 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   });
 
   // Selector de tamaño: escala el lienzo 1280x720 según la pantalla
+  // Tema claro / oscuro
+  const themeBtn = document.getElementById('themeBtn');
+  let theme = localStorage.getItem('deckTheme') || 'light';
+  function applyTheme() {
+    document.documentElement.setAttribute('data-theme', theme);
+    themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
+  themeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    theme = theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('deckTheme', theme);
+    applyTheme();
+  });
+  applyTheme();
+
   let sizeId = localStorage.getItem('deckSize') || 'm';
   function computeFit() {
     const fw = window.innerWidth / 1280;
