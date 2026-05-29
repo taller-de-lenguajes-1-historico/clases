@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Introducción a C# y .NET — Clase Nro 5</title>
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --panel: #ffffff;
+    --panel-2: #eef0f5;
+    --border: #d9dee8;
+    --text: #1b2230;
+    --muted: #5a6576;
+    --accent: #7c3aed;
+    --accent-2: #2563eb;
+    --green: #15803d;
+    --red: #dc2626;
+    --yellow: #b45309;
+    --code-bg: #f6f8fa;
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .deck {
+    position: fixed; inset: 0;
+    display: flex;
+    align-items: safe center;
+    justify-content: safe center;
+    overflow: auto;
+    background: var(--bg);
+  }
+
+  .slide {
+    flex: 0 0 auto;
+    width: 1280px; height: 720px;
+    zoom: var(--fit, 1);
+    padding: 56px 72px 80px 72px;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; }
+
+  /* Selector de tamaño */
+  .sizer {
+    position: fixed;
+    top: 14px; right: 18px;
+    z-index: 20;
+    display: flex; align-items: center; gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 6px;
+    box-shadow: 0 2px 10px rgba(20,30,55,0.10);
+    user-select: none;
+  }
+  .sizer .lbl { font-size: 11px; color: var(--muted); padding: 0 6px; letter-spacing: 0.04em; }
+  .sizer button {
+    font-family: inherit;
+    font-size: 12px; font-weight: 700;
+    border: 0; cursor: pointer;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .sizer button:hover { color: var(--accent); }
+  .sizer button.on { background: var(--accent); color: #fff; }
+
+  /* Link al índice */
+  .home-link {
+    position: fixed;
+    top: 14px; left: 18px;
+    z-index: 20;
+    font-size: 12px; font-weight: 700;
+    text-decoration: none;
+    color: var(--muted);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    box-shadow: 0 2px 10px rgba(20,30,55,0.10);
+  }
+  .home-link:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* Filmstrip: miniaturas de slides (aparece desde la izquierda) */
+  .filmstrip-hot { position: fixed; top: 0; left: 0; width: 16px; height: 100vh; z-index: 29; }
+  .filmstrip {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; width: 240px;
+    z-index: 30;
+    background: rgba(255,255,255,0.94);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    border-right: 1px solid var(--border);
+    box-shadow: 6px 0 28px rgba(20,30,55,0.10);
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    overflow-y: auto; overflow-x: hidden;
+    padding: 14px 12px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .filmstrip.open { transform: translateX(0); }
+  .filmstrip:hover { transform: translateX(0); }
+  .thumb {
+    position: relative;
+    width: 208px; height: 117px;
+    flex: 0 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg);
+    cursor: pointer; padding: 0;
+  }
+  .thumb:hover { border-color: var(--accent); }
+  .thumb.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb-canvas {
+    position: absolute; top: 0; left: 0;
+    width: 1280px; height: 720px;
+    transform: scale(0.1625); transform-origin: top left;
+    pointer-events: none;
+  }
+  .thumb-slide {
+    display: flex !important;
+    position: static !important;
+    zoom: 1 !important;
+    width: 1280px !important; height: 720px !important;
+  }
+  .thumb-num {
+    position: absolute; bottom: 4px; right: 5px;
+    font-size: 10px; font-weight: 700; color: #fff;
+    background: rgba(20,30,55,0.6);
+    border-radius: 4px; padding: 0 5px;
+    pointer-events: none;
+  }
+
+  .slide-eyebrow {
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+
+  h1.title {
+    font-size: 64px;
+    line-height: 1.05;
+    margin: 0 0 16px 0;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  h1.title .accent { color: var(--accent); }
+
+  h2.slide-title {
+    font-size: 38px;
+    line-height: 1.1;
+    margin: 0 0 22px 0;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 21px;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  ul.bullets {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.55;
+  }
+  ul.bullets li {
+    padding-left: 28px;
+    position: relative;
+    margin-bottom: 10px;
+  }
+  ul.bullets li::before {
+    content: "→";
+    color: var(--accent);
+    position: absolute;
+    left: 0;
+    font-weight: 700;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 8px;
+  }
+  .columns.three { grid-template-columns: 1fr 1fr 1fr; }
+  .columns.four  { grid-template-columns: 1fr 1fr 1fr 1fr; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(20,30,55,0.05), 0 8px 24px rgba(20,30,55,0.04);
+  }
+  .card h3 {
+    margin: 0 0 10px 0;
+    font-size: 19px;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+  .card p, .card li { font-size: 16px; color: var(--text); line-height: 1.55; }
+  .card ul { padding-left: 20px; margin: 0; }
+
+  .imgcard {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .imgcard img { max-width: 100%; max-height: 100%; height: auto; border-radius: 8px; display: block; }
+  .imgcaption { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center; line-height: 1.4; }
+
+  pre.code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #24292f;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 15px;
+    line-height: 1.55;
+    overflow: auto;
+    margin: 8px 0;
+  }
+  pre.code .c { color: #6e7781; font-style: italic; }
+  pre.code .k { color: #cf222e; }
+  pre.code .s { color: #0a7d33; }
+  pre.code .t { color: #8250df; }
+  pre.code .n { color: #0550ae; }
+
+  /* Botón copiar código */
+  .code-wrap { position: relative; }
+  .copy-btn {
+    position: absolute;
+    top: 8px; right: 8px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--muted);
+    border-radius: 6px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .code-wrap:hover .copy-btn { opacity: 1; }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); opacity: 1; }
+
+  table.tbl {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 17px;
+    box-shadow: 0 1px 3px rgba(20,30,55,0.05), 0 8px 24px rgba(20,30,55,0.04);
+  }
+  table.tbl th, table.tbl td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  table.tbl th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+  table.tbl tr:last-child td { border-bottom: none; }
+  table.tbl code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 14px; }
+
+  .callout {
+    margin-top: 14px;
+    background: rgba(124,58,237,0.08);
+    border-left: 3px solid var(--accent);
+    padding: 12px 18px;
+    border-radius: 6px;
+    color: var(--text);
+    font-size: 17px;
+  }
+  .callout code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+
+  .small-note {
+    color: var(--muted);
+    font-size: 15px;
+    margin-top: 12px;
+    line-height: 1.55;
+  }
+  .small-note code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+
+  .pager {
+    position: fixed;
+    bottom: 18px; right: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    user-select: none;
+  }
+  .brand {
+    position: fixed;
+    bottom: 18px; left: 24px;
+    color: var(--muted);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    user-select: none;
+  }
+  .brand b { color: var(--accent); }
+
+  .progress {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: var(--accent);
+    transition: width 0.25s ease;
+    z-index: 10;
+  }
+
+  .slide.title-slide {
+    justify-content: center;
+    background: radial-gradient(ellipse at top left, rgba(124,58,237,0.12), transparent 55%),
+                radial-gradient(ellipse at bottom right, rgba(37,99,235,0.10), transparent 55%),
+                var(--bg);
+  }
+
+  .title-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: center;
+  }
+  .title-photo {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    box-shadow: 0 12px 40px rgba(20,30,55,0.18);
+  }
+  .title-photo img { width: 100%; height: auto; display: block; }
+
+  .two-col-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 8px;
+  }
+  .col h4 {
+    margin: 0 0 10px 0;
+    color: var(--accent);
+    font-size: 15px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: 1fr 28px 1fr 28px 1fr;
+    gap: 14px;
+    align-items: stretch;
+    margin-top: 18px;
+  }
+  .flow .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .pill {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    color: var(--accent-2);
+    background: var(--panel-2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+
+  ul.bullets li code, .card code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+
+  .kbd {
+    display: inline-block;
+    font-family: "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 8px;
+    color: var(--text);
+  }
+
+  /* Lista numerada de pasos */
+  ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 0; line-height: 1.5; }
+  ol.steps li { counter-increment: step; padding: 9px 0 9px 42px; position: relative; border-bottom: 1px solid var(--border); }
+  ol.steps li:last-child { border-bottom: none; }
+  ol.steps li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 9px;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    font-weight: 700; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  ol.steps li code { color: var(--accent-2); background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 0.9em; }
+
+  /* Exportar a PDF / imprimir */
+  @media print {
+    @page { size: 1280px 720px; margin: 0; }
+    html, body { background: var(--bg); }
+    .deck {
+      position: static;
+      display: block;
+      width: 1280px;
+      height: auto;
+      overflow: visible;
+    }
+    .slide {
+      display: flex !important;
+      position: relative !important;
+      inset: auto !important;
+      zoom: 1 !important;
+      width: 1280px;
+      height: 720px;
+      page-break-after: always;
+      break-after: page;
+      overflow: hidden;
+    }
+    .slide:last-child { page-break-after: auto; break-after: auto; }
+    .progress, .pager, .brand, .copy-btn, .sizer, .home-link, .filmstrip, .filmstrip-hot { display: none !important; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<div class="deck" id="deck">
+
+  <!-- 1. Título -->
+  <section class="slide title-slide active">
+    <div class="title-grid">
+      <div>
+        <div class="slide-eyebrow">Clase Nro 5</div>
+        <h1 class="title">Introducción a <span class="accent">C#</span> y .NET</h1>
+        <p class="subtitle">El lenguaje y sus posibilidades, el SDK .NET, la CLI, tipos de datos, estructuras de control y cómo compila.</p>
+        <div class="columns three" style="margin-top: 22px; gap: 12px;">
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">El lenguaje C#</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">SDK .NET + CLI</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Tipos de datos</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Control de flujo</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Compilación</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Proyectos</h3></div>
+        </div>
+      </div>
+      <div class="title-photo">
+        <img src="img/image1.jpg" alt="Programación: laptop con código" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ¿Qué es C#? -->
+  <section class="slide">
+    <div class="slide-eyebrow">El lenguaje</div>
+    <h2 class="slide-title">¿Qué es C#?</h2>
+    <p class="subtitle">Un lenguaje <b>orientado a objetos</b>, desarrollado por Microsoft como parte de la plataforma .NET. Se pronuncia <i>"si sharp"</i>.</p>
+    <div class="columns" style="margin-top: 14px; grid-template-columns: 1.25fr 0.75fr; align-items: center;">
+      <div class="card">
+        <h3>Datos de interés</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.8;">
+          <li>Creado por el danés <b>Anders Hejlsberg</b>, autor también de Turbo Pascal y Delphi.</li>
+          <li>Estandarizado por <b>ECMA (ECMA-334)</b> e <b>ISO/IEC 23270</b>.</li>
+          <li>En constante evolución: hoy vamos por la versión <b>12+</b>.</li>
+          <li>Hereda mucho de <b>C / C++</b> y se parece a <b>Java</b>.</li>
+        </ul>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image4.jpg" alt="Anders Hejlsberg" style="max-height: 240px;" />
+        <div class="imgcaption">Anders Hejlsberg, creador de C#.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Características -->
+  <section class="slide">
+    <div class="slide-eyebrow">El lenguaje</div>
+    <h2 class="slide-title">Características de C#</h2>
+    <div class="columns" style="margin-top: 12px; grid-template-columns: 1.4fr 0.6fr; align-items: center;">
+      <div class="card">
+        <ul style="margin:0; padding-left:18px; line-height:1.7; font-size:15px;">
+          <li><b>Sintaxis sencilla</b>, muy parecida a Java.</li>
+          <li><b>Fuertemente tipado</b> y <b>orientado a objetos</b> (todo vive en una clase).</li>
+          <li><b>Multiparadigma</b> y con <b>programación multihilo</b>.</li>
+          <li><b>Sistema de tipos unificado</b>: todo deriva de <code>System.Object</code>.</li>
+          <li>Gestión de memoria con <b>garbage collector</b>.</li>
+          <li>Manejo de errores con <b>excepciones</b>.</li>
+          <li>Manejo de colecciones con <b>LINQ</b>.</li>
+          <li>Organización flexible: namespaces, proyectos y soluciones.</li>
+        </ul>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image2.jpg" alt="Meme: C++ es el padre de C#" style="max-height: 210px;" />
+        <div class="imgcaption">«C++… soy tu padre». C# desciende de C/C++.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. ¿Qué puedo programar? -->
+  <section class="slide">
+    <div class="slide-eyebrow">El lenguaje</div>
+    <h2 class="slide-title">¿Qué puedo programar con C#?</h2>
+    <div class="columns three" style="margin-top: 16px;">
+      <div class="card"><h3>Consola</h3><p>Aplicaciones de línea de comandos en Windows, Linux y macOS con .NET.</p></div>
+      <div class="card"><h3>Escritorio</h3><p>Windows Forms, WPF, UWP, y GTK# en Linux.</p></div>
+      <div class="card"><h3>Web</h3><p>ASP.NET / ASP.NET Core (multiplataforma).</p></div>
+      <div class="card"><h3>Móvil</h3><p>Apps multiplataforma (Android, iOS) con .NET MAUI / Xamarin.</p></div>
+      <div class="card"><h3>Videojuegos</h3><p>Unity, Godot, MonoGame — PC y consolas.</p></div>
+      <div class="card"><h3>IoT</h3><p>Dispositivos y microframeworks.</p></div>
+    </div>
+  </section>
+
+  <!-- 5. Interpretado vs compilado -->
+  <section class="slide">
+    <div class="slide-eyebrow">Conceptos</div>
+    <h2 class="slide-title">Lenguajes interpretados vs compilados</h2>
+    <p class="subtitle">Un script requiere un <b>intérprete</b>; un programa requiere un <b>compilador</b>. Cada enfoque optimiza algo distinto.</p>
+    <div class="columns" style="margin-top: 16px;">
+      <div class="card">
+        <h3>Interpretado</h3>
+        <p>Optimizado para hacerle la vida fácil al programador (ciclo escribir→probar más rápido), a costa de más trabajo para la máquina en ejecución.</p>
+        <span class="pill">ciclo de desarrollo rápido</span>
+      </div>
+      <div class="card">
+        <h3>Compilado</h3>
+        <p>Optimizado para la ejecución. Se traduce a código máquina, por lo que depende de la <b>arquitectura</b> para la que se compiló.</p>
+        <span class="pill">ejecución optimizada</span>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 16px;">C# es un caso intermedio interesante: se compila a un <b>lenguaje intermedio (IL)</b> y luego se traduce a nativo en ejecución (lo vemos al final).</div>
+  </section>
+
+  <!-- 6. Definiciones -->
+  <section class="slide">
+    <div class="slide-eyebrow">Conceptos</div>
+    <h2 class="slide-title">Librería · API · SDK · Framework</h2>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Librería (library)</h3>
+        <p>Conjunto de elementos (funciones, clases, tipos, constantes…) reutilizables para facilitar la implementación de un programa.</p>
+      </div>
+      <div class="card">
+        <h3>API</h3>
+        <p><i>Application Programming Interface</i>: la interfaz para usar las funcionalidades de una librería o sistema, sin conocer su implementación interna.</p>
+      </div>
+      <div class="card">
+        <h3>SDK</h3>
+        <p>Colección de librerías, APIs, documentación y utilidades. Ofrece herramientas para que las uses <b>como quieras</b>.</p>
+      </div>
+      <div class="card">
+        <h3>Framework</h3>
+        <p>Similar al SDK, pero <b>vos insertás tu código en él</b> y el framework lo ejecuta en el momento adecuado (inversión de control).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Ecosistema .NET -->
+  <section class="slide">
+    <div class="slide-eyebrow">.NET</div>
+    <h2 class="slide-title">El ecosistema .NET</h2>
+    <p class="subtitle">De varias bifurcaciones históricas a un .NET unificado, multiplataforma y open source.</p>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card">
+        <h3>.NET Framework</h3>
+        <p>El original (2002), solo Windows. Versión final <b>4.8.1</b>. Closed source.</p>
+        <span class="pill">Windows</span>
+      </div>
+      <div class="card">
+        <h3>Mono / Xamarin</h3>
+        <p>Mono: implementación open source multiplataforma. Xamarin (móvil) fue adquirida por Microsoft y liberada.</p>
+        <span class="pill">multiplataforma</span>
+      </div>
+      <div class="card">
+        <h3>.NET Core → .NET 5+</h3>
+        <p>Reescritura open source y multiplataforma. Hoy unificado como <b>.NET 5, 6, 7, 8…</b></p>
+        <span class="pill">open source</span>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 14px;">El compilador <b>Roslyn</b> (C# y VB) es open source (Apache 2.0) desde 2014.</div>
+  </section>
+
+  <!-- 8. IDEs -->
+  <section class="slide">
+    <div class="slide-eyebrow">Herramientas</div>
+    <h2 class="slide-title">IDEs y editores</h2>
+    <p class="subtitle">Entornos de desarrollo integrado para escribir, compilar y depurar C#.</p>
+    <div class="columns four" style="margin-top: 16px;">
+      <div class="card"><h3>VS Code</h3><p>Editor liviano, open source, multiplataforma, con extensiones para C#.</p></div>
+      <div class="card"><h3>Visual Studio</h3><p>IDE completo de Microsoft (Windows / Mac).</p></div>
+      <div class="card"><h3>Rider</h3><p>IDE de JetBrains para .NET, multiplataforma.</p></div>
+      <div class="card"><h3>MonoDevelop</h3><p>IDE open source para apps GTK#/Mono.</p></div>
+    </div>
+  </section>
+
+  <!-- 9. CLI: anatomía -->
+  <section class="slide">
+    <div class="slide-eyebrow">.NET CLI</div>
+    <h2 class="slide-title">La línea de comandos de .NET</h2>
+    <p class="subtitle">Un comando de la CLI se compone de: el <b>driver</b> (<code>dotnet</code>), el <b>comando</b>, sus <b>argumentos</b> y <b>opciones</b>.</p>
+    <pre class="code" style="margin-top: 8px; font-size: 15px;"><span class="c"># driver  comando  argumento   opción     parámetro</span>
+dotnet    new      console     --framework net8.0</pre>
+    <div class="columns four" style="margin-top: 14px;">
+      <div class="card"><h3>dotnet</h3><p>El driver: la herramienta de línea de comandos.</p></div>
+      <div class="card"><h3>new</h3><p>El comando a ejecutar.</p></div>
+      <div class="card"><h3>console</h3><p>El argumento (qué plantilla crear).</p></div>
+      <div class="card"><h3>--framework net8.0</h3><p>Una opción con su parámetro.</p></div>
+    </div>
+  </section>
+
+  <!-- 10. Comandos útiles -->
+  <section class="slide">
+    <div class="slide-eyebrow">.NET CLI · Referencia</div>
+    <h2 class="slide-title">Comandos útiles</h2>
+    <table class="tbl" style="margin-top: 12px; font-size: 15px;">
+      <thead><tr><th>Comando</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><code>dotnet --version</code></td><td>Versión del SDK instalado.</td></tr>
+        <tr><td><code>dotnet --info</code> · <code>--list-sdks</code></td><td>Información del entorno y SDKs instalados.</td></tr>
+        <tr><td><code>dotnet new list</code></td><td>Lista las plantillas de proyecto disponibles.</td></tr>
+        <tr><td><code>dotnet new console</code></td><td>Crea un proyecto de consola.</td></tr>
+        <tr><td><code>dotnet new classlib -o nombre</code></td><td>Crea una librería de clases.</td></tr>
+        <tr><td><code>dotnet run</code></td><td>Compila y ejecuta el proyecto local.</td></tr>
+        <tr><td><code>dotnet build</code></td><td>Compila el proyecto.</td></tr>
+        <tr><td><code>dotnet clean</code></td><td>Elimina los archivos de la última compilación.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 11. Estructura de un proyecto de consola -->
+  <section class="slide">
+    <div class="slide-eyebrow">Proyecto de consola</div>
+    <h2 class="slide-title">Estructura de un proyecto</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>El archivo .csproj</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">&lt;Project</span> Sdk=<span class="s">"Microsoft.NET.Sdk"</span><span class="t">&gt;</span>
+  <span class="t">&lt;PropertyGroup&gt;</span>
+    <span class="t">&lt;OutputType&gt;</span>Exe<span class="t">&lt;/OutputType&gt;</span>
+    <span class="t">&lt;TargetFramework&gt;</span>net8.0<span class="t">&lt;/TargetFramework&gt;</span>
+    <span class="t">&lt;ImplicitUsings&gt;</span>enable<span class="t">&lt;/ImplicitUsings&gt;</span>
+    <span class="t">&lt;Nullable&gt;</span>enable<span class="t">&lt;/Nullable&gt;</span>
+  <span class="t">&lt;/PropertyGroup&gt;</span>
+<span class="t">&lt;/Project&gt;</span></pre>
+      </div>
+      <div class="card">
+        <h3>¿Qué configura?</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.7;">
+          <li><b>OutputType</b>: tipo de salida (Exe / librería).</li>
+          <li><b>TargetFramework</b>: versión de .NET.</li>
+          <li><b>ImplicitUsings</b>: incluye librerías comunes por defecto (archivo <code>GlobalUsings.g.cs</code> autogenerado). Se puede desactivar (<code>disable</code>).</li>
+          <li><b>Nullable</b>: avisa sobre el uso de <code>null</code> en tipos de referencia.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12. El objeto Console -->
+  <section class="slide">
+    <div class="slide-eyebrow">Entrada / Salida</div>
+    <h2 class="slide-title">El objeto Console</h2>
+    <p class="subtitle">Representa los flujos estándar de entrada, salida y error de una aplicación de consola.</p>
+    <pre class="code" style="margin-top: 8px;"><span class="t">Console</span>.WriteLine(<span class="s">"Hola"</span>);  <span class="c">// muestra un mensaje y salto de línea</span>
+<span class="t">Console</span>.Write(<span class="s">"Sin salto"</span>);  <span class="c">// muestra sin salto de línea</span>
+
+<span class="t">string</span> linea = <span class="t">Console</span>.ReadLine();  <span class="c">// lee una línea de texto</span>
+<span class="t">int</span> tecla = <span class="t">Console</span>.Read();        <span class="c">// lee un caracter (int)</span>
+<span class="t">Console</span>.ReadKey();                  <span class="c">// espera una tecla</span></pre>
+  </section>
+
+  <!-- 13. Sistema de tipos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos</div>
+    <h2 class="slide-title">Tipos de valor vs tipos de referencia</h2>
+    <p class="subtitle">La distinción más importante del sistema de tipos de C#.</p>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Tipo de valor</h3>
+        <p>La variable <b>almacena directamente</b> la instancia. Al asignarla o pasarla a un método, se hace una <b>copia independiente</b>.</p>
+        <p style="margin-top:8px;"><b>Ejemplos:</b> <code>int</code>, <code>bool</code>, <code>char</code>, <code>double</code>, <code>struct</code>, <code>enum</code>.</p>
+      </div>
+      <div class="card">
+        <h3>Tipo de referencia</h3>
+        <p>La variable guarda una <b>referencia</b> a la ubicación en memoria. Al asignarla se copia <b>la referencia</b>, no la instancia.</p>
+        <p style="margin-top:8px;"><b>Ejemplos:</b> <code>class</code>, <code>interface</code>, <code>delegate</code>, <code>string</code>.</p>
+      </div>
+    </div>
+    <p class="small-note">También existen los tipos de <b>puntero</b> (uso avanzado, en contextos <code>unsafe</code>).</p>
+  </section>
+
+  <!-- 14. Tipos de valor: simples + struct -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · Valor</div>
+    <h2 class="slide-title">Tipos simples y struct</h2>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1fr 1fr; align-items: start;">
+      <div class="card">
+        <h3>Tipos simples (palabras reservadas)</h3>
+        <table class="tbl" style="font-size:13px;">
+          <thead><tr><th>Tipo</th><th>Categoría</th></tr></thead>
+          <tbody>
+            <tr><td><code>bool</code></td><td>booleano</td></tr>
+            <tr><td><code>int</code>, <code>long</code>, <code>short</code>, <code>byte</code></td><td>enteros</td></tr>
+            <tr><td><code>uint</code>, <code>ulong</code>…</td><td>enteros sin signo</td></tr>
+            <tr><td><code>float</code>, <code>double</code>, <code>decimal</code></td><td>punto flotante</td></tr>
+            <tr><td><code>char</code></td><td>caracter</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card">
+        <h3>struct: agrupar variables relacionadas</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">public struct</span> <span class="t">Coords</span>
+{
+   <span class="k">public</span> <span class="t">int</span> x, y;
+
+   <span class="k">public</span> <span class="t">Coords</span>(<span class="t">int</span> p1, <span class="t">int</span> p2)
+   {
+      x = p1;
+      y = p2;
+   }
+}</pre>
+        <p class="small-note" style="margin-top:10px;">Un <code>struct</code> es un tipo de <b>valor</b>: ideal para grupos chicos de datos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15. El tipo string: inicialización y concatenación -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · string</div>
+    <h2 class="slide-title">El tipo string</h2>
+    <p class="subtitle"><code>string</code> es un alias de <code>System.String</code> (tipo de <b>referencia</b>). Una cadena es una colección de solo lectura de caracteres.</p>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>Inicialización</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">string</span> mensaje = <span class="s">"Hola, mundo!"</span>;
+<span class="t">string</span> nombre  = <span class="s">"Ana"</span>;
+<span class="t">string</span> vacio   = <span class="t">string</span>.Empty;</pre>
+      </div>
+      <div class="card">
+        <h3>Concatenación e interpolación</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="c">// operador +</span>
+<span class="t">string</span> a = <span class="s">"Hola, "</span> + nombre;
+<span class="c">// método Concat</span>
+<span class="t">string</span> b = <span class="t">string</span>.Concat(<span class="s">"Hola, "</span>, nombre);
+<span class="c">// interpolación (.NET 6+) — la más legible</span>
+<span class="t">string</span> c = $<span class="s">"Hola, {nombre}!"</span>;</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16. string: métodos + TryParse -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · string</div>
+    <h2 class="slide-title">string: métodos y conversión</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>Acceso y métodos útiles</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">string</span> t = <span class="s">"Ejemplo de C#"</span>;
+<span class="t">char</span> primero = t[<span class="n">0</span>];      <span class="c">// 'E'</span>
+<span class="t">int</span> largo = t.Length;       <span class="c">// 13</span>
+
+t.ToUpper();  t.ToLower();
+t.Substring(<span class="n">0</span>, <span class="n">3</span>);          <span class="c">// "Eje"</span>
+t.Replace(<span class="s">"C#"</span>, <span class="s">"C Sharp"</span>);
+t.Split(<span class="s">' '</span>);  t.Trim();</pre>
+      </div>
+      <div class="card">
+        <h3>Convertir string → número</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="t">string</span> s = <span class="s">"108"</span>;
+<span class="t">int</span> i;
+<span class="t">bool</span> ok = <span class="t">int</span>.TryParse(s, <span class="k">out</span> i);
+<span class="c">// ok = true, i = 108</span></pre>
+        <p class="small-note" style="margin-top:10px;"><code>TryParse</code> devuelve <code>true/false</code> sin lanzar excepción si la cadena no es válida. Lo implementan todos los tipos numéricos, <code>DateTime</code>, etc.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17. Nullable types -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · null</div>
+    <h2 class="slide-title">Tipos nullable</h2>
+    <p class="subtitle">Agregando <code>?</code> después del tipo, un tipo de <b>valor</b> puede representar también <code>null</code>.</p>
+    <pre class="code" style="margin-top: 8px;"><span class="t">int</span>? edad = <span class="k">null</span>;
+<span class="t">bool</span>? activo = <span class="k">true</span>;
+<span class="t">DateTime</span>? fecha = <span class="k">null</span>;
+<span class="t">string</span>? texto = <span class="s">"esto puede ser null"</span>;   <span class="c">// referencia nullable (C# 8+)</span>
+
+<span class="k">if</span> (edad <span class="k">is</span> <span class="k">null</span>) { ... }       <span class="c">// preguntar por null</span>
+<span class="k">if</span> (edad.HasValue) { ... }      <span class="c">// equivalente para tipos de valor</span></pre>
+    <div class="callout" style="margin-top: 14px;">Desde C# 8.0, los tipos de <b>referencia</b> son <b>no nullable por defecto</b> (la feature <i>nullable reference types</i>); por eso aparece la advertencia verde si podés asignar <code>null</code>.</div>
+  </section>
+
+  <!-- 18. DateTime -->
+  <section class="slide">
+    <div class="slide-eyebrow">Tipos de datos · Fecha y hora</div>
+    <h2 class="slide-title">DateTime</h2>
+    <p class="subtitle">Tipo de <b>valor</b> que representa fechas y horas (del año 1 al 9999, calendario gregoriano).</p>
+    <pre class="code" style="margin-top: 8px;"><span class="c">// crear con constructor (año, mes, día, hora, min, seg)</span>
+<span class="t">DateTime</span> fecha = <span class="k">new</span> <span class="t">DateTime</span>(<span class="n">2023</span>, <span class="n">5</span>, <span class="n">15</span>, <span class="n">8</span>, <span class="n">30</span>, <span class="n">0</span>);
+
+<span class="c">// la fecha y hora actual</span>
+<span class="t">DateTime</span> hoy = <span class="t">DateTime</span>.Now;
+
+<span class="t">Console</span>.WriteLine($<span class="s">"{hoy:yyyy-MM-dd}"</span>);</pre>
+    <p class="small-note">También se puede inicializar desde un valor devuelto por una propiedad/método, o parsear desde una cadena (<code>DateTime.Parse</code> / <code>TryParse</code>).</p>
+  </section>
+
+  <!-- 19. Control de flujo: decisión -->
+  <section class="slide">
+    <div class="slide-eyebrow">Estructuras de control</div>
+    <h2 class="slide-title">Decisión: if / else y switch</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>if / else</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">if</span> (condicion)
+{
+   <span class="c">// instrucciones</span>
+}
+<span class="k">else</span>
+{
+   <span class="c">// instrucciones</span>
+}</pre>
+      </div>
+      <div class="card">
+        <h3>switch</h3>
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">switch</span> (expresion)
+{
+   <span class="k">case</span> <span class="n">1</span>:
+      <span class="c">// instrucciones</span>
+      <span class="k">break</span>;
+   <span class="k">case</span> <span class="n">2</span>:
+      <span class="c">// instrucciones</span>
+      <span class="k">break</span>;
+   <span class="k">default</span>:
+      <span class="c">// instrucciones</span>
+      <span class="k">break</span>;
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20. Control de flujo: ciclos -->
+  <section class="slide">
+    <div class="slide-eyebrow">Estructuras de control</div>
+    <h2 class="slide-title">Ciclos iterativos</h2>
+    <div class="columns three" style="margin-top: 10px;">
+      <div class="card">
+        <h3>for</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">for</span> (<span class="t">int</span> i = <span class="n">0</span>;
+     i &lt; <span class="n">10</span>;
+     i++)
+{
+   <span class="c">// ...</span>
+}</pre>
+      </div>
+      <div class="card">
+        <h3>while / do-while</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">while</span> (cond)
+{
+   <span class="c">// ...</span>
+}
+
+<span class="k">do</span>
+{
+   <span class="c">// al menos 1 vez</span>
+} <span class="k">while</span> (cond);</pre>
+      </div>
+      <div class="card">
+        <h3>foreach</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="k">foreach</span> (<span class="t">var</span> x
+         <span class="k">in</span> coleccion)
+{
+   <span class="c">// recorre cada</span>
+   <span class="c">// elemento</span>
+}</pre>
+        <p class="small-note" style="margin-top:8px;">Ideal para recorrer colecciones.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21. Lenguajes compilados -->
+  <section class="slide">
+    <div class="slide-eyebrow">Compilación</div>
+    <h2 class="slide-title">Cómo compila un lenguaje compilado</h2>
+    <p class="subtitle">El compilador traduce el código fuente directo a <b>código máquina</b> para una arquitectura específica (C, C++, Go, Rust…).</p>
+    <div class="card imgcard" style="margin-top: 12px;">
+      <img src="img/image20.png" alt="Lenguaje de alto nivel a lenguaje de máquina" style="max-height: 300px;" />
+      <div class="imgcaption">Del lenguaje de alto nivel (programador) al lenguaje de máquina (procesador).</div>
+    </div>
+  </section>
+
+  <!-- 22. Cómo compila .NET -->
+  <section class="slide">
+    <div class="slide-eyebrow">Compilación</div>
+    <h2 class="slide-title">Cómo compila .NET</h2>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1fr 1.1fr; align-items: center;">
+      <div class="card">
+        <ol class="steps" style="font-size:15px;">
+          <li><b>MSBuild</b> construye la solución/proyecto.</li>
+          <li><b>Roslyn</b> compila el C# y produce un <code>.exe</code>/<code>.dll</code> en <b>lenguaje intermedio (IL/CIL)</b>.</li>
+          <li>El <b>CLR</b> ejecuta el IL; el <b>JIT</b> lo traduce a <b>código nativo</b> al vuelo.</li>
+          <li>El <b>Garbage Collector</b> libera la memoria automáticamente.</li>
+        </ol>
+      </div>
+      <div class="card imgcard">
+        <img src="img/image22.png" alt="Flujo de compilación de .NET" />
+        <div class="imgcaption">MSBuild → Roslyn → IL → CLR → JIT → código nativo.</div>
+      </div>
+    </div>
+    <p class="small-note">El IL es comparable al <i>bytecode</i> de Java: una capa intermedia independiente de la arquitectura.</p>
+  </section>
+
+  <!-- 23. Roslyn -->
+  <section class="slide">
+    <div class="slide-eyebrow">Compilación</div>
+    <h2 class="slide-title">Roslyn, el compilador</h2>
+    <p class="subtitle">El compilador moderno de C# y Visual Basic, open source (Apache 2.0). No solo compila: expone servicios a las herramientas.</p>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>Qué hace</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.7;">
+          <li>Comprobación de sintaxis.</li>
+          <li>Autocompletado de código.</li>
+          <li>Refactorizaciones.</li>
+          <li>Y mucho más, desde el IDE o la CLI.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Funcionalidades</h3>
+        <ul style="margin:0; padding-left:18px; line-height:1.7;">
+          <li>Renombrado inteligente en vivo.</li>
+          <li>Refactors como <i>Introduce Local</i> / <i>Inline Temporary</i>.</li>
+          <li>Avisos (lightbulbs) para mejorar el código.</li>
+          <li>Coloreado de sintaxis e IntelliSense.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 24. Estructura de una app + cierre -->
+  <section class="slide">
+    <div class="slide-eyebrow">Organización · Cierre</div>
+    <h2 class="slide-title">Cómo se estructura una app en C#</h2>
+    <p class="subtitle">De lo más chico a lo más grande. Al compilar, todo se empaqueta en <b>ensamblados</b> (<code>.exe</code> o <code>.dll</code>).</p>
+    <div class="flow" style="margin-top: 18px;">
+      <div class="card"><h3>Clase</h3><p>La unidad más pequeña: campos y métodos.</p></div>
+      <div class="arrow">→</div>
+      <div class="card"><h3>Namespace</h3><p>Agrupa clases relacionadas.</p></div>
+      <div class="arrow">→</div>
+      <div class="card"><h3>Proyecto / Solución</h3><p>El proyecto agrupa namespaces (define la tecnología); la solución agrupa proyectos.</p></div>
+    </div>
+    <div class="callout" style="margin-top: 18px;"><b>Bibliografía:</b> docs de Microsoft (.NET / C#), historia de versiones de C#, glosario de .NET. ¡Manos a la obra con un proyecto de consola!</div>
+  </section>
+
+
+</div>
+
+<a class="home-link" href="../index.html">← Índice</a>
+<div class="sizer" id="sizer">
+  <span class="lbl">Tamaño</span>
+  <button data-size="fit">Ajustar</button>
+  <button data-size="m">Cómodo</button>
+  <button data-size="l">Grande</button>
+  <button data-size="xl">Enorme</button>
+</div>
+<div class="brand"><b>C#</b> · Clase 5 — Introducción a .NET</div>
+<div class="pager"><span id="cur">1</span> / <span id="total">1</span></div>
+
+<script>
+  // Botón "Copiar" en cada bloque de código
+  document.querySelectorAll('pre.code').forEach((pre) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'code-wrap';
+    pre.parentNode.insertBefore(wrap, pre);
+    wrap.appendChild(pre);
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'copy-btn';
+    btn.textContent = 'Copiar';
+
+    const flash = (txt, ok) => {
+      btn.textContent = txt;
+      btn.classList.toggle('copied', !!ok);
+      setTimeout(() => { btn.textContent = 'Copiar'; btn.classList.remove('copied'); }, 1500);
+    };
+
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const code = pre.innerText;
+      try {
+        await navigator.clipboard.writeText(code);
+        flash('¡Copiado!', true);
+      } catch (err) {
+        // Fallback para contextos no seguros (ej. file://)
+        try {
+          const r = document.createRange();
+          r.selectNodeContents(pre);
+          const sel = window.getSelection();
+          sel.removeAllRanges();
+          sel.addRange(r);
+          document.execCommand('copy');
+          sel.removeAllRanges();
+          flash('¡Copiado!', true);
+        } catch (_) {
+          flash('Error', false);
+        }
+      }
+    });
+
+    wrap.appendChild(btn);
+  });
+
+  // Selector de tamaño: escala el lienzo 1280x720 según la pantalla
+  let sizeId = localStorage.getItem('deckSize') || 'm';
+  function computeFit() {
+    const fw = window.innerWidth / 1280;
+    const fh = window.innerHeight / 720;
+    let z;
+    if (sizeId === 'fit') z = Math.min(fw, fh);   // slide completa visible
+    else if (sizeId === 'l') z = fw * 1.2;        // grande
+    else if (sizeId === 'xl') z = fw * 1.4;       // enorme
+    else z = fw;                                   // "Cómodo" (default): llena el ancho
+    document.documentElement.style.setProperty('--fit', z.toFixed(3));
+  }
+  const sizer = document.getElementById('sizer');
+  function syncSizer() {
+    sizer.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.size === sizeId));
+  }
+  sizer.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sizeId = b.dataset.size;
+      localStorage.setItem('deckSize', sizeId);
+      computeFit();
+      syncSizer();
+    });
+  });
+  window.addEventListener('resize', computeFit);
+  computeFit();
+  syncSizer();
+
+  const slides = document.querySelectorAll('.slide');
+  const progress = document.getElementById('progress');
+  const cur = document.getElementById('cur');
+  const total = document.getElementById('total');
+  total.textContent = slides.length;
+
+  let thumbEls = [];
+  let i = 0;
+  function show(idx) {
+    i = Math.max(0, Math.min(slides.length - 1, idx));
+    slides.forEach((s, n) => s.classList.toggle('active', n === i));
+    cur.textContent = i + 1;
+    progress.style.width = ((i + 1) / slides.length * 100) + '%';
+    if (location.hash !== '#' + (i + 1)) {
+      history.replaceState(null, '', '#' + (i + 1));
+    }
+    thumbEls.forEach((t, n) => t.classList.toggle('current', n === i));
+    if (thumbEls[i]) thumbEls[i].scrollIntoView({ block: 'nearest' });
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { show(i + 1); e.preventDefault(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { show(i - 1); e.preventDefault(); }
+    else if (e.key === 'Home') { show(0); }
+    else if (e.key === 'End') { show(slides.length - 1); }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('a, pre, code, input, button, .filmstrip')) return;
+    const x = e.clientX / window.innerWidth;
+    if (x > 0.5) show(i + 1); else show(i - 1);
+  });
+
+  window.addEventListener('hashchange', () => {
+    const n = parseInt((location.hash || '#1').slice(1), 10);
+    if (!isNaN(n)) show(n - 1);
+  });
+
+  // Filmstrip de miniaturas (clones escalados de cada slide)
+  (function buildFilmstrip() {
+    const film = document.createElement('div'); film.className = 'filmstrip';
+    const hot = document.createElement('div'); hot.className = 'filmstrip-hot';
+    slides.forEach((s, n) => {
+      const thumb = document.createElement('button');
+      thumb.type = 'button';
+      thumb.className = 'thumb';
+      const canvas = document.createElement('div');
+      canvas.className = 'thumb-canvas';
+      const clone = s.cloneNode(true);
+      clone.classList.remove('active');
+      clone.classList.add('thumb-slide');
+      clone.removeAttribute('id');
+      clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
+      canvas.appendChild(clone);
+      thumb.appendChild(canvas);
+      const num = document.createElement('span');
+      num.className = 'thumb-num';
+      num.textContent = n + 1;
+      thumb.appendChild(num);
+      thumb.addEventListener('click', (e) => { e.stopPropagation(); show(n); });
+      film.appendChild(thumb);
+      thumbEls.push(thumb);
+    });
+    document.body.appendChild(film);
+    document.body.appendChild(hot);
+    hot.addEventListener('mouseenter', () => film.classList.add('open'));
+    film.addEventListener('mouseleave', () => film.classList.remove('open'));
+  })();
+
+  const initial = parseInt((location.hash || '#1').slice(1), 10);
+  show(isNaN(initial) ? 0 : initial - 1);
+</script>
+
+</body>
+</html>
