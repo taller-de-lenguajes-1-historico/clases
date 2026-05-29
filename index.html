@@ -35,11 +35,11 @@
     font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
     margin-bottom: 14px;
   }
-  h1 { font-size: 52px; line-height: 1.05; margin: 0 0 14px; font-weight: 800; letter-spacing: -0.02em; }
+  h1 { font-size: 52px; line-height: 1.05; margin: 0 0 14px; font-weight: 800; letter-spacing: -0.02em; text-wrap: balance; }
   h1 .accent { color: var(--accent); }
-  .lead { color: var(--muted); font-size: 20px; line-height: 1.5; margin: 0; max-width: 640px; }
+  .lead { color: var(--muted); font-size: 20px; line-height: 1.55; margin: 0; max-width: 660px; text-wrap: pretty; }
 
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 22px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 
   .class-card {
     display: flex;
@@ -89,9 +89,11 @@
   footer a { color: var(--accent-2); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
 
+  @media (max-width: 880px) {
+    .grid { grid-template-columns: 1fr; }
+  }
   @media (max-width: 520px) {
     h1 { font-size: 38px; }
-    .grid { grid-template-columns: 1fr; }
     .class-card { flex-direction: column; }
   }
 </style>
@@ -100,7 +102,7 @@
   <div class="wrap">
     <header>
       <div class="eyebrow">Taller de Lenguajes 1</div>
-      <h1>Material de <span class="accent">clases</span></h1>
+      <h1>Contenidos de la <span class="accent">materia</span></h1>
       <p class="lead">Presentaciones interactivas y proyectos de ejemplo ejecutables. Cada clase incluye sus slides (navegables y exportables a PDF) y un proyecto .NET con todos los ejemplos.</p>
     </header>
 
