@@ -113,17 +113,32 @@
   .filmstrip.open { transform: translateX(0); }
   .filmstrip:hover { transform: translateX(0); }
   .thumb {
+    flex: 0 0 auto;
+    width: 208px;
+    display: flex; flex-direction: column; gap: 5px;
+    border: 0; background: transparent; padding: 0;
+    cursor: pointer;
+    text-align: left;
+  }
+  .thumb-frame {
     position: relative;
     width: 208px; height: 117px;
-    flex: 0 0 auto;
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
     background: var(--bg);
-    cursor: pointer; padding: 0;
   }
-  .thumb:hover { border-color: var(--accent); }
-  .thumb.current { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb:hover .thumb-frame { border-color: var(--accent); }
+  .thumb.current .thumb-frame { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .thumb-label { padding: 0 2px 2px; line-height: 1.25; }
+  .thumb-chapter {
+    display: block;
+    font-size: 9.5px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--accent);
+  }
+  .thumb-topic { display: block; font-size: 11px; color: var(--text); }
+  .thumb.current .thumb-topic { font-weight: 700; }
   .thumb-canvas {
     position: absolute; top: 0; left: 0;
     width: 1280px; height: 720px;
@@ -466,7 +481,7 @@
 <div class="deck" id="deck">
 
   <!-- 1. Título -->
-  <section class="slide title-slide active">
+  <section class="slide title-slide active" data-chapter="Introducción" data-topic="Portada">
     <div class="title-grid">
       <div>
         <div class="slide-eyebrow">Clase Nro 5</div>
@@ -488,7 +503,7 @@
   </section>
 
   <!-- 2. ¿Qué es C#? -->
-  <section class="slide">
+  <section class="slide" data-chapter="El lenguaje" data-topic="¿Qué es C#?">
     <div class="slide-eyebrow">El lenguaje</div>
     <h2 class="slide-title">¿Qué es C#?</h2>
     <p class="subtitle">Un lenguaje <b>orientado a objetos</b>, desarrollado por Microsoft como parte de la plataforma .NET. Se pronuncia <i>"si sharp"</i>.</p>
@@ -510,7 +525,7 @@
   </section>
 
   <!-- 3. Características -->
-  <section class="slide">
+  <section class="slide" data-chapter="El lenguaje" data-topic="Características">
     <div class="slide-eyebrow">El lenguaje</div>
     <h2 class="slide-title">Características de C#</h2>
     <div class="columns" style="margin-top: 12px; grid-template-columns: 1.4fr 0.6fr; align-items: center;">
@@ -534,7 +549,7 @@
   </section>
 
   <!-- 4. ¿Qué puedo programar? -->
-  <section class="slide">
+  <section class="slide" data-chapter="El lenguaje" data-topic="¿Qué puedo programar?">
     <div class="slide-eyebrow">El lenguaje</div>
     <h2 class="slide-title">¿Qué puedo programar con C#?</h2>
     <div class="columns three" style="margin-top: 16px;">
@@ -548,7 +563,7 @@
   </section>
 
   <!-- 5. Interpretado vs compilado -->
-  <section class="slide">
+  <section class="slide" data-chapter="Conceptos" data-topic="Interpretado vs compilado">
     <div class="slide-eyebrow">Conceptos</div>
     <h2 class="slide-title">Lenguajes interpretados vs compilados</h2>
     <p class="subtitle">Un script requiere un <b>intérprete</b>; un programa requiere un <b>compilador</b>. Cada enfoque optimiza algo distinto.</p>
@@ -568,7 +583,7 @@
   </section>
 
   <!-- 6. Definiciones -->
-  <section class="slide">
+  <section class="slide" data-chapter="Conceptos" data-topic="Librería · API · SDK · Framework">
     <div class="slide-eyebrow">Conceptos</div>
     <h2 class="slide-title">Librería · API · SDK · Framework</h2>
     <div class="columns" style="margin-top: 14px;">
@@ -592,7 +607,7 @@
   </section>
 
   <!-- 7. Ecosistema .NET -->
-  <section class="slide">
+  <section class="slide" data-chapter=".NET" data-topic="Ecosistema .NET">
     <div class="slide-eyebrow">.NET</div>
     <h2 class="slide-title">El ecosistema .NET</h2>
     <p class="subtitle">De varias bifurcaciones históricas a un .NET unificado, multiplataforma y open source.</p>
@@ -617,7 +632,7 @@
   </section>
 
   <!-- 8. IDEs -->
-  <section class="slide">
+  <section class="slide" data-chapter=".NET" data-topic="IDEs y editores">
     <div class="slide-eyebrow">Herramientas</div>
     <h2 class="slide-title">IDEs y editores</h2>
     <p class="subtitle">Entornos de desarrollo integrado para escribir, compilar y depurar C#.</p>
@@ -630,7 +645,7 @@
   </section>
 
   <!-- 9. CLI: anatomía -->
-  <section class="slide">
+  <section class="slide" data-chapter=".NET CLI" data-topic="Anatomía del comando">
     <div class="slide-eyebrow">.NET CLI</div>
     <h2 class="slide-title">La línea de comandos de .NET</h2>
     <p class="subtitle">Un comando de la CLI se compone de: el <b>driver</b> (<code>dotnet</code>), el <b>comando</b>, sus <b>argumentos</b> y <b>opciones</b>.</p>
@@ -645,7 +660,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 10. Comandos útiles -->
-  <section class="slide">
+  <section class="slide" data-chapter=".NET CLI" data-topic="Comandos útiles">
     <div class="slide-eyebrow">.NET CLI · Referencia</div>
     <h2 class="slide-title">Comandos útiles</h2>
     <table class="tbl" style="margin-top: 12px; font-size: 15px;">
@@ -664,7 +679,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 11. Estructura de un proyecto de consola -->
-  <section class="slide">
+  <section class="slide" data-chapter="Primeros pasos" data-topic="Estructura del proyecto">
     <div class="slide-eyebrow">Proyecto de consola</div>
     <h2 class="slide-title">Estructura de un proyecto</h2>
     <div class="columns" style="margin-top: 10px;">
@@ -692,7 +707,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 11b. Hola Mundo -->
-  <section class="slide">
+  <section class="slide" data-chapter="Primeros pasos" data-topic="Tu primer programa">
     <div class="slide-eyebrow">Primeros pasos</div>
     <h2 class="slide-title">Tu primer programa</h2>
     <p class="subtitle">El clásico "Hola, mundo". Desde .NET 6 alcanza con una línea (top-level statements); por debajo sigue existiendo la forma clásica con <code>Main</code>.</p>
@@ -723,7 +738,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 12. El objeto Console -->
-  <section class="slide">
+  <section class="slide" data-chapter="Primeros pasos" data-topic="El objeto Console">
     <div class="slide-eyebrow">Entrada / Salida</div>
     <h2 class="slide-title">El objeto Console</h2>
     <p class="subtitle">Representa los flujos estándar de entrada, salida y error de una aplicación de consola.</p>
@@ -736,7 +751,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 13. Sistema de tipos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="Valor vs referencia">
     <div class="slide-eyebrow">Tipos de datos</div>
     <h2 class="slide-title">Tipos de valor vs tipos de referencia</h2>
     <p class="subtitle">La distinción más importante del sistema de tipos de C#.</p>
@@ -756,7 +771,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 14. Tipos de valor: simples + struct -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="Tipos simples y struct">
     <div class="slide-eyebrow">Tipos de datos · Valor</div>
     <h2 class="slide-title">Tipos simples y struct</h2>
     <div class="columns" style="margin-top: 10px; grid-template-columns: 1fr 1fr; align-items: start;">
@@ -791,7 +806,7 @@ dotnet    new      console     --framework net8.0</pre>
   </section>
 
   <!-- 14b. Variables, constantes y operadores -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="Variables y operadores">
     <div class="slide-eyebrow">Tipos de datos · Variables</div>
     <h2 class="slide-title">Variables, constantes y operadores</h2>
     <div class="columns" style="margin-top: 10px;">
@@ -825,7 +840,7 @@ contador += <span class="n">1</span>;   total *= <span class="n">2</span>;</pre>
   </section>
 
   <!-- 15. El tipo string: inicialización y concatenación -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="El tipo string">
     <div class="slide-eyebrow">Tipos de datos · string</div>
     <h2 class="slide-title">El tipo string</h2>
     <p class="subtitle"><code>string</code> es un alias de <code>System.String</code> (tipo de <b>referencia</b>). Una cadena es una colección de solo lectura de caracteres.</p>
@@ -849,7 +864,7 @@ contador += <span class="n">1</span>;   total *= <span class="n">2</span>;</pre>
   </section>
 
   <!-- 16. string: métodos + TryParse -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="string: métodos">
     <div class="slide-eyebrow">Tipos de datos · string</div>
     <h2 class="slide-title">string: métodos y conversión</h2>
     <div class="columns" style="margin-top: 10px;">
@@ -876,7 +891,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 16b. Conversión de tipos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="Conversión de tipos">
     <div class="slide-eyebrow">Tipos de datos · Conversión</div>
     <h2 class="slide-title">Conversión de tipos</h2>
     <div class="columns" style="margin-top: 10px;">
@@ -908,7 +923,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 17. Nullable types -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="Tipos nullable">
     <div class="slide-eyebrow">Tipos de datos · null</div>
     <h2 class="slide-title">Tipos nullable</h2>
     <p class="subtitle">Agregando <code>?</code> después del tipo, un tipo de <b>valor</b> puede representar también <code>null</code>.</p>
@@ -923,7 +938,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 18. DateTime -->
-  <section class="slide">
+  <section class="slide" data-chapter="Tipos de datos" data-topic="DateTime">
     <div class="slide-eyebrow">Tipos de datos · Fecha y hora</div>
     <h2 class="slide-title">DateTime</h2>
     <p class="subtitle">Tipo de <b>valor</b> que representa fechas y horas (del año 1 al 9999, calendario gregoriano).</p>
@@ -938,7 +953,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 19. Control de flujo: decisión -->
-  <section class="slide">
+  <section class="slide" data-chapter="Control de flujo" data-topic="if / switch">
     <div class="slide-eyebrow">Estructuras de control</div>
     <h2 class="slide-title">Decisión: if / else y switch</h2>
     <div class="columns" style="margin-top: 10px;">
@@ -972,7 +987,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 20. Control de flujo: ciclos -->
-  <section class="slide">
+  <section class="slide" data-chapter="Control de flujo" data-topic="Ciclos">
     <div class="slide-eyebrow">Estructuras de control</div>
     <h2 class="slide-title">Ciclos iterativos</h2>
     <div class="columns three" style="margin-top: 10px;">
@@ -1011,7 +1026,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 20b. Ejemplo integrador -->
-  <section class="slide">
+  <section class="slide" data-chapter="Práctica" data-topic="Mini programa integrador">
     <div class="slide-eyebrow">Manos a la obra</div>
     <h2 class="slide-title">Juntando todo: un mini programa</h2>
     <p class="subtitle">Pide datos al usuario, los convierte, calcula y decide. Usa casi todo lo de la clase.</p>
@@ -1045,7 +1060,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 21. Lenguajes compilados -->
-  <section class="slide">
+  <section class="slide" data-chapter="Compilación" data-topic="Lenguajes compilados">
     <div class="slide-eyebrow">Compilación</div>
     <h2 class="slide-title">Cómo compila un lenguaje compilado</h2>
     <p class="subtitle">El compilador traduce el código fuente directo a <b>código máquina</b> para una arquitectura específica (C, C++, Go, Rust…).</p>
@@ -1056,7 +1071,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 22. Cómo compila .NET -->
-  <section class="slide">
+  <section class="slide" data-chapter="Compilación" data-topic="Cómo compila .NET">
     <div class="slide-eyebrow">Compilación</div>
     <h2 class="slide-title">Cómo compila .NET</h2>
     <div class="columns" style="margin-top: 10px; grid-template-columns: 1fr 1.1fr; align-items: center;">
@@ -1077,7 +1092,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 23. Roslyn -->
-  <section class="slide">
+  <section class="slide" data-chapter="Compilación" data-topic="Roslyn">
     <div class="slide-eyebrow">Compilación</div>
     <h2 class="slide-title">Roslyn, el compilador</h2>
     <p class="subtitle">El compilador moderno de C# y Visual Basic, open source (Apache 2.0). No solo compila: expone servicios a las herramientas.</p>
@@ -1104,7 +1119,7 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
   </section>
 
   <!-- 24. Estructura de una app + cierre -->
-  <section class="slide">
+  <section class="slide" data-chapter="Cierre" data-topic="Estructura de una app">
     <div class="slide-eyebrow">Organización · Cierre</div>
     <h2 class="slide-title">Cómo se estructura una app en C#</h2>
     <p class="subtitle">De lo más chico a lo más grande. Al compilar, todo se empaqueta en <b>ensamblados</b> (<code>.exe</code> o <code>.dll</code>).</p>
@@ -1252,6 +1267,9 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
       const thumb = document.createElement('button');
       thumb.type = 'button';
       thumb.className = 'thumb';
+
+      const frame = document.createElement('div');
+      frame.className = 'thumb-frame';
       const canvas = document.createElement('div');
       canvas.className = 'thumb-canvas';
       const clone = s.cloneNode(true);
@@ -1260,11 +1278,32 @@ t.Split(<span class="s">' '</span>);  t.Trim();</pre>
       clone.removeAttribute('id');
       clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
       canvas.appendChild(clone);
-      thumb.appendChild(canvas);
+      frame.appendChild(canvas);
       const num = document.createElement('span');
       num.className = 'thumb-num';
       num.textContent = n + 1;
-      thumb.appendChild(num);
+      frame.appendChild(num);
+      thumb.appendChild(frame);
+
+      // Etiqueta: capítulo (agrupador) + tema
+      const chapter = s.dataset.chapter || s.querySelector('.slide-eyebrow')?.textContent || '';
+      const topic = s.dataset.topic || s.querySelector('.slide-title, .title')?.textContent || '';
+      const label = document.createElement('div');
+      label.className = 'thumb-label';
+      if (chapter) {
+        const c = document.createElement('span');
+        c.className = 'thumb-chapter';
+        c.textContent = chapter;
+        label.appendChild(c);
+      }
+      if (topic) {
+        const t = document.createElement('span');
+        t.className = 'thumb-topic';
+        t.textContent = topic;
+        label.appendChild(t);
+      }
+      thumb.appendChild(label);
+
       thumb.addEventListener('click', (e) => { e.stopPropagation(); show(n); });
       film.appendChild(thumb);
       thumbEls.push(thumb);
