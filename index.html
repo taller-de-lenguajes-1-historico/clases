@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Taller de Lenguajes 1 — Clases</title>
+<style>
+  :root {
+    --bg: #f5f6f9;
+    --panel: #ffffff;
+    --panel-2: #eef0f5;
+    --border: #d9dee8;
+    --text: #1b2230;
+    --muted: #5a6576;
+    --accent: #7c3aed;
+    --accent-2: #2563eb;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background:
+      radial-gradient(ellipse at top left, rgba(124,58,237,0.10), transparent 55%),
+      radial-gradient(ellipse at bottom right, rgba(37,99,235,0.08), transparent 55%),
+      var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 64px 28px 80px; }
+
+  header { margin-bottom: 44px; }
+  .eyebrow {
+    color: var(--accent);
+    font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700;
+    margin-bottom: 14px;
+  }
+  h1 { font-size: 52px; line-height: 1.05; margin: 0 0 14px; font-weight: 800; letter-spacing: -0.02em; }
+  h1 .accent { color: var(--accent); }
+  .lead { color: var(--muted); font-size: 20px; line-height: 1.5; margin: 0; max-width: 640px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 22px; }
+
+  .class-card {
+    display: flex;
+    gap: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(20,30,55,0.05), 0 10px 30px rgba(20,30,55,0.05);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  }
+  .class-card:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(20,30,55,0.08), 0 18px 50px rgba(20,30,55,0.10); border-color: #c9d0de; }
+
+  .num {
+    flex: 0 0 auto;
+    width: 58px; height: 58px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; font-weight: 800;
+  }
+  .body { flex: 1 1 auto; min-width: 0; }
+  .body h2 { margin: 2px 0 6px; font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+  .body p { margin: 0 0 14px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 16px; }
+  .tag { font-size: 12px; color: var(--accent-2); background: var(--panel-2); padding: 3px 9px; border-radius: 999px; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 10px; }
+  a.btn {
+    text-decoration: none;
+    font-size: 14px; font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 9px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    background: var(--panel);
+    transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  }
+  a.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  a.btn.primary:hover { background: #6d28d9; border-color: #6d28d9; }
+  a.btn:hover { border-color: var(--accent); color: var(--accent); }
+  a.btn.primary:hover { color: #fff; }
+
+  footer { margin-top: 48px; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  footer a { color: var(--accent-2); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+
+  @media (max-width: 520px) {
+    h1 { font-size: 38px; }
+    .grid { grid-template-columns: 1fr; }
+    .class-card { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="eyebrow">Taller de Lenguajes 1</div>
+      <h1>Material de <span class="accent">clases</span></h1>
+      <p class="lead">Presentaciones interactivas y proyectos de ejemplo ejecutables. Cada clase incluye sus slides (navegables y exportables a PDF) y un proyecto .NET con todos los ejemplos.</p>
+    </header>
+
+    <main class="grid">
+
+      <article class="class-card">
+        <div class="num">6</div>
+        <div class="body">
+          <h2>Clases (POO)</h2>
+          <p>Programación orientada a objetos: clases, objetos, miembros, métodos, visibilidad y clases estáticas.</p>
+          <div class="tags">
+            <span class="tag">objetos</span>
+            <span class="tag">campos &amp; métodos</span>
+            <span class="tag">visibilidad</span>
+            <span class="tag">constructor</span>
+            <span class="tag">clase estática</span>
+          </div>
+          <div class="links">
+            <a class="btn primary" href="clase-06-clases/clases-csharp-slides.html">Ver presentación →</a>
+            <a class="btn" href="clase-06-clases/proyecto-ejemplo/">Proyecto de ejemplo</a>
+          </div>
+        </div>
+      </article>
+
+      <article class="class-card">
+        <div class="num">7</div>
+        <div class="body">
+          <h2>Colecciones en C#</h2>
+          <p>Arreglos, tipos genéricos, colecciones (List, Dictionary, Queue, Stack), iteradores, LINQ y enum.</p>
+          <div class="tags">
+            <span class="tag">arreglos</span>
+            <span class="tag">genéricos</span>
+            <span class="tag">colecciones</span>
+            <span class="tag">LINQ</span>
+            <span class="tag">enum</span>
+          </div>
+          <div class="links">
+            <a class="btn primary" href="clase-07-colecciones/colecciones-csharp-slides.html">Ver presentación →</a>
+            <a class="btn" href="clase-07-colecciones/proyecto-ejemplo/">Proyecto de ejemplo</a>
+          </div>
+        </div>
+      </article>
+
+    </main>
+
+    <footer>
+      <p>Repositorio: <a href="https://github.com/taller-de-lenguajes-1-historico/clases">github.com/taller-de-lenguajes-1-historico/clases</a></p>
+      <p>Las presentaciones se navegan con <b>← →</b> / <b>Espacio</b> y se exportan a PDF con <b>Ctrl/Cmd + P</b>. Los proyectos se corren con <b>dotnet run</b>.</p>
+    </footer>
+  </div>
+</body>
+</html>
