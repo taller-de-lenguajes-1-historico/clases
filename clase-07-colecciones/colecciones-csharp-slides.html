@@ -31,22 +31,52 @@
   }
 
   .deck {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+    position: fixed; inset: 0;
+    display: flex;
+    align-items: safe center;
+    justify-content: safe center;
+    overflow: auto;
+    background: var(--bg);
   }
 
   .slide {
-    position: absolute;
-    inset: 0;
+    flex: 0 0 auto;
+    width: 1280px; height: 720px;
+    zoom: var(--fit, 1);
     padding: 56px 72px 80px 72px;
     display: none;
     flex-direction: column;
     justify-content: flex-start;
-    overflow: auto;
+    overflow: hidden;
   }
   .slide.active { display: flex; }
+
+  /* Selector de tamaño */
+  .sizer {
+    position: fixed;
+    top: 14px; right: 18px;
+    z-index: 20;
+    display: flex; align-items: center; gap: 4px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 4px 6px;
+    box-shadow: 0 2px 10px rgba(20,30,55,0.10);
+    user-select: none;
+  }
+  .sizer .lbl { font-size: 11px; color: var(--muted); padding: 0 6px; letter-spacing: 0.04em; }
+  .sizer button {
+    font-family: inherit;
+    font-size: 12px; font-weight: 700;
+    border: 0; cursor: pointer;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    transition: background 0.12s ease, color 0.12s ease;
+  }
+  .sizer button:hover { color: var(--accent); }
+  .sizer button.on { background: var(--accent); color: #fff; }
 
   .slide-eyebrow {
     color: var(--accent);
@@ -328,6 +358,7 @@
     html, body { background: var(--bg); }
     .deck {
       position: static;
+      display: block;
       width: 1280px;
       height: auto;
       overflow: visible;
@@ -336,6 +367,7 @@
       display: flex !important;
       position: relative !important;
       inset: auto !important;
+      zoom: 1 !important;
       width: 1280px;
       height: 720px;
       page-break-after: always;
@@ -343,7 +375,7 @@
       overflow: hidden;
     }
     .slide:last-child { page-break-after: auto; break-after: auto; }
-    .progress, .pager, .brand, .copy-btn { display: none !important; }
+    .progress, .pager, .brand, .copy-btn, .sizer { display: none !important; }
     * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   }
 </style>
@@ -984,6 +1016,13 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
 
 </div>
 
+<div class="sizer" id="sizer">
+  <span class="lbl">Tamaño</span>
+  <button data-size="fit">Ajustar</button>
+  <button data-size="m">Cómodo</button>
+  <button data-size="l">Grande</button>
+  <button data-size="xl">Enorme</button>
+</div>
 <div class="brand"><b>C#</b> · Clase 7 — Colecciones</div>
 <div class="pager"><span id="cur">1</span> / <span id="total">1</span></div>
 
@@ -1031,6 +1070,35 @@ estudiantes.Add(<span class="k">new</span> <span class="t">Persona</span> { Nomb
 
     wrap.appendChild(btn);
   });
+
+  // Selector de tamaño: escala el lienzo 1280x720 según la pantalla
+  let sizeId = localStorage.getItem('deckSize') || 'm';
+  function computeFit() {
+    const fw = window.innerWidth / 1280;
+    const fh = window.innerHeight / 720;
+    let z;
+    if (sizeId === 'fit') z = Math.min(fw, fh);   // slide completa visible
+    else if (sizeId === 'l') z = fw * 1.2;        // grande
+    else if (sizeId === 'xl') z = fw * 1.4;       // enorme
+    else z = fw;                                   // "Cómodo" (default): llena el ancho
+    document.documentElement.style.setProperty('--fit', z.toFixed(3));
+  }
+  const sizer = document.getElementById('sizer');
+  function syncSizer() {
+    sizer.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.size === sizeId));
+  }
+  sizer.querySelectorAll('button').forEach(b => {
+    b.addEventListener('click', (e) => {
+      e.stopPropagation();
+      sizeId = b.dataset.size;
+      localStorage.setItem('deckSize', sizeId);
+      computeFit();
+      syncSizer();
+    });
+  });
+  window.addEventListener('resize', computeFit);
+  computeFit();
+  syncSizer();
 
   const slides = document.querySelectorAll('.slide');
   const progress = document.getElementById('progress');
