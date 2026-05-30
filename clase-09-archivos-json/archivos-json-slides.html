@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Archivos JSON — Clase Nro 9</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Spktro/slidedeck@v1/deck.css" />
+</head>
+<body>
+
+<div class="deck" id="deck" data-brand="C# · Clase 9 — Archivos JSON" data-home="../index.html">
+
+  <!-- 1. Título -->
+  <section class="slide title-slide active" data-chapter="Introducción" data-topic="Portada">
+    <div class="title-grid">
+      <div>
+        <div class="slide-eyebrow">Clase Nro 9</div>
+        <h1 class="title">Archivos <span class="accent">JSON</span></h1>
+        <p class="subtitle">Qué es JSON, sus tipos y comparación con XML, serialización en .NET y consumo de servicios web.</p>
+        <div class="columns three" style="margin-top: 22px; gap: 12px;">
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Qué es JSON</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Tipos y formato</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">JSON vs XML</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Serialización</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">System.Text.Json</h3></div>
+          <div class="card" style="padding:12px 16px;"><h3 style="font-size:15px;margin:0;">Servicios web</h3></div>
+        </div>
+      </div>
+      <div class="title-photo">
+        <img src="img/image1.jpeg" alt="Programación: laptop con código" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. ¿Qué es JSON? -->
+  <section class="slide" data-chapter="JSON" data-topic="¿Qué es JSON?">
+    <div class="slide-eyebrow">JSON</div>
+    <h2 class="slide-title">¿Qué es JSON?</h2>
+    <p class="subtitle" style="max-width: 920px;"><b>JSON</b> (<i>JavaScript Object Notation</i>) es un formato de <b>texto sencillo para el intercambio de datos</b>.</p>
+    <div class="columns" style="margin-top: 16px;">
+      <div class="card">
+        <h3>Ligero y legible</h3>
+        <p>Fácil de leer y escribir para personas, y simple de interpretar y generar para las máquinas.</p>
+      </div>
+      <div class="card">
+        <h3>Independiente del lenguaje</h3>
+        <p>Nació de JavaScript, pero hoy es un formato de texto <b>independiente</b> de cualquier lenguaje de programación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Historia -->
+  <section class="slide" data-chapter="JSON" data-topic="Un poco de historia">
+    <div class="slide-eyebrow">JSON · Historia</div>
+    <h2 class="slide-title">¿Por qué apareció JSON?</h2>
+    <p class="subtitle" style="max-width: 940px;">A los '90 surgió el problema de que máquinas con distintos SO y lenguajes se entendieran. La primera solución fue <b>XML</b>.</p>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card">
+        <h3>El problema de XML</h3>
+        <p>Con <b>gran volumen de datos</b>, el procesamiento se volvía lento y los archivos pesados.</p>
+      </div>
+      <div class="card">
+        <h3>La respuesta: JSON</h3>
+        <p>Creado por <b>Douglas Crockford</b>. Reduce el tamaño de los archivos y los datos a transmitir; se volvió un estándar.</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top: 16px;">XML no desapareció: hoy <b>ambos</b> se usan para el intercambio de datos.</div>
+  </section>
+
+  <!-- 4. Usos -->
+  <section class="slide" data-chapter="JSON" data-topic="Usos">
+    <div class="slide-eyebrow">JSON · Usos</div>
+    <h2 class="slide-title">¿Para qué se usa?</h2>
+    <div class="columns three" style="margin-top: 16px;">
+      <div class="card"><h3>APIs REST</h3><p>El formato de intercambio por defecto de la mayoría de las APIs web.</p></div>
+      <div class="card"><h3>AJAX</h3><p>Intercambio de datos entre el navegador y el servidor sin recargar la página.</p></div>
+      <div class="card"><h3>Configuración y datos</h3><p>Archivos de config, persistencia y mensajería entre servicios.</p></div>
+    </div>
+  </section>
+
+  <!-- 5. Formato de ejemplo -->
+  <section class="slide" data-chapter="JSON" data-topic="Formato de ejemplo">
+    <div class="slide-eyebrow">JSON · Formato</div>
+    <h2 class="slide-title">Un ejemplo de JSON</h2>
+    <pre class="code" style="margin-top: 6px; font-size: 14px;">{
+  <span class="s">"departamento"</span>: <span class="n">8</span>,
+  <span class="s">"nombredepto"</span>: <span class="s">"Ventas"</span>,
+  <span class="s">"director"</span>: <span class="s">"Juan Rodríguez"</span>,
+  <span class="s">"empleados"</span>: [
+    { <span class="s">"nombre"</span>: <span class="s">"Pedro"</span>, <span class="s">"apellido"</span>: <span class="s">"Fernández"</span> },
+    { <span class="s">"nombre"</span>: <span class="s">"José"</span>,  <span class="s">"apellido"</span>: <span class="s">"Macome"</span> }
+  ]
+}</pre>
+    <p class="small-note">Pares <code>"nombre": valor</code> entre llaves; listas entre corchetes; se puede anidar.</p>
+  </section>
+
+  <!-- 6. Tipos de datos -->
+  <section class="slide" data-chapter="JSON" data-topic="Tipos de datos">
+    <div class="slide-eyebrow">JSON · Tipos</div>
+    <h2 class="slide-title">Tipos de datos aceptados</h2>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card"><h3>Números</h3><p>Enteros o con parte fraccional; admiten negativos. <code>30</code>, <code>-1.5</code></p></div>
+      <div class="card"><h3>Cadenas</h3><p>Entre comillas dobles, con escapes. <code>"Hola"</code></p></div>
+      <div class="card"><h3>Booleanos</h3><p><code>true</code> / <code>false</code></p></div>
+      <div class="card"><h3>null</h3><p>El valor nulo. <code>null</code></p></div>
+      <div class="card"><h3>Array</h3><p>Lista ordenada entre corchetes. <code>["a","b"]</code></p></div>
+      <div class="card"><h3>Objeto</h3><p>Pares <code>nombre:valor</code> entre llaves.</p></div>
+    </div>
+  </section>
+
+  <!-- 7. JSON vs XML -->
+  <section class="slide" data-chapter="JSON" data-topic="JSON vs XML">
+    <div class="slide-eyebrow">JSON · Comparativa</div>
+    <h2 class="slide-title">JSON vs XML</h2>
+    <div class="columns" style="margin-top: 10px;">
+      <div class="card">
+        <h3>JSON</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;">{
+  <span class="s">"actor"</span>: [
+    { <span class="s">"id"</span>: <span class="s">"01"</span>,
+      <span class="s">"name"</span>: <span class="s">"Tom"</span>,
+      <span class="s">"lastname"</span>: <span class="s">"Hanks"</span> },
+    { <span class="s">"id"</span>: <span class="s">"02"</span>,
+      <span class="s">"name"</span>: <span class="s">"Nick"</span>,
+      <span class="s">"lastname"</span>: <span class="s">"Thameson"</span> }
+  ]
+}</pre>
+      </div>
+      <div class="card">
+        <h3>XML</h3>
+        <pre class="code" style="margin:0; font-size:12px; padding:12px 14px;"><span class="t">&lt;root&gt;</span>
+  <span class="t">&lt;actor&gt;</span>
+    <span class="t">&lt;id&gt;</span>01<span class="t">&lt;/id&gt;</span>
+    <span class="t">&lt;name&gt;</span>Tom<span class="t">&lt;/name&gt;</span>
+    <span class="t">&lt;lastname&gt;</span>Hanks<span class="t">&lt;/lastname&gt;</span>
+  <span class="t">&lt;/actor&gt;</span>
+<span class="t">&lt;/root&gt;</span></pre>
+      </div>
+    </div>
+    <p class="small-note">JSON suele ser más compacto y rápido de procesar para grandes volúmenes.</p>
+  </section>
+
+  <!-- 8. Conceptos a tener en cuenta -->
+  <section class="slide" data-chapter="JSON" data-topic="A tener en cuenta">
+    <div class="slide-eyebrow">JSON · Detalles</div>
+    <h2 class="slide-title">A tener en cuenta</h2>
+    <ul class="bullets" style="font-size: 19px; margin-top: 8px;">
+      <li>JSON es <b>solo un formato de datos</b> (no es código que se ejecuta).</li>
+      <li><b>Comillas dobles</b> obligatorias en cadenas y nombres de propiedades; las simples no son válidas.</li>
+      <li>Una <b>coma o dos puntos</b> mal ubicados rompen el archivo.</li>
+      <li>El valor de nivel superior puede ser cualquier tipo válido: una cadena o un número solos también son JSON válido.</li>
+      <li>A diferencia de JavaScript, en JSON las propiedades <b>siempre</b> van entre comillas.</li>
+    </ul>
+  </section>
+
+  <!-- 9. Serialización: concepto -->
+  <section class="slide" data-chapter="Serialización" data-topic="Concepto">
+    <div class="slide-eyebrow">Serialización</div>
+    <h2 class="slide-title">Serializar y deserializar</h2>
+    <p class="subtitle"><b>Serializar</b> es convertir un objeto en una secuencia de bytes o texto que lo representa; <b>deserializar</b> es el camino inverso.</p>
+    <div class="flow" style="margin-top: 22px;">
+      <div class="card"><h3>Objeto (clase)</h3><p>Una instancia en memoria.</p></div>
+      <div class="arrow">⇄</div>
+      <div class="card"><h3>Serializar →</h3><p>objeto → cadena JSON.<br>← Deserializar: JSON → objeto.</p></div>
+      <div class="arrow">⇄</div>
+      <div class="card"><h3>JSON (string)</h3><p>Texto que se guarda o transmite.</p></div>
+    </div>
+  </section>
+
+  <!-- 10. Para qué sirve la serialización -->
+  <section class="slide" data-chapter="Serialización" data-topic="Para qué sirve">
+    <div class="slide-eyebrow">Serialización · Usos</div>
+    <h2 class="slide-title">¿Para qué sirve?</h2>
+    <div class="columns" style="margin-top: 14px;">
+      <div class="card"><h3>Persistencia</h3><p>Guardar el estado de un objeto en archivos o bases de datos.</p></div>
+      <div class="card"><h3>Comunicación de red</h3><p>Enviar datos entre sistemas o componentes.</p></div>
+      <div class="card"><h3>Clonación</h3><p>Crear una copia exacta de un objeto.</p></div>
+      <div class="card"><h3>Colas de mensajes</h3><p>Enviar objetos a través de sistemas de mensajería.</p></div>
+    </div>
+  </section>
+
+  <!-- 11. JSON en .NET -->
+  <section class="slide" data-chapter="Serialización" data-topic="JSON en .NET">
+    <div class="slide-eyebrow">Serialización · .NET</div>
+    <h2 class="slide-title">JSON en .NET: dos opciones</h2>
+    <div class="columns" style="margin-top: 16px;">
+      <div class="card">
+        <h3>System.Text.Json</h3>
+        <p>Incorporado en el propio SDK: <b>no</b> necesita instalar nada. Moderno y de alto rendimiento.</p>
+        <span class="pill">recomendado</span>
+      </div>
+      <div class="card">
+        <h3>Newtonsoft.Json</h3>
+        <p>Librería externa (se obtiene por <b>NuGet</b>). Muy usada históricamente, con muchas funciones.</p>
+        <span class="pill">externa (NuGet)</span>
+      </div>
+    </div>
+    <p class="small-note">En la clase usamos <code>System.Text.Json</code>.</p>
+  </section>
+
+  <!-- 12. Componentes de System.Text.Json -->
+  <section class="slide" data-chapter="Serialización" data-topic="System.Text.Json">
+    <div class="slide-eyebrow">Serialización · System.Text.Json</div>
+    <h2 class="slide-title">Componentes principales</h2>
+    <table class="tbl" style="margin-top: 12px; font-size:15px;">
+      <thead><tr><th>Tipo</th><th>Para qué</th></tr></thead>
+      <tbody>
+        <tr><td><code>JsonSerializer</code></td><td>Serializa objetos .NET a JSON y deserializa JSON a objetos. <b>El más usado.</b></td></tr>
+        <tr><td><code>JsonDocument</code></td><td>Examinar la estructura de un documento JSON.</td></tr>
+        <tr><td><code>JsonElement</code></td><td>Representa un valor específico dentro de un documento JSON.</td></tr>
+        <tr><td><code>Utf8JsonWriter</code> / <code>Utf8JsonReader</code></td><td>API de alto rendimiento para escribir/leer JSON UTF-8 token a token.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 13. Serializar (code) -->
+  <section class="slide" data-chapter="Serialización" data-topic="Serializar">
+    <div class="slide-eyebrow">Serialización · Serializar</div>
+    <h2 class="slide-title">Serializar: objeto → JSON</h2>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1.1fr 0.9fr; align-items: start;">
+      <div class="card">
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">using</span> <span class="t">System.Text.Json</span>;
+
+<span class="k">public class</span> <span class="t">Producto</span>
+{
+   <span class="k">public</span> <span class="t">string</span> Nombre { <span class="k">get; set;</span> }
+   <span class="k">public</span> <span class="t">int</span> Precio { <span class="k">get; set;</span> }
+}
+
+<span class="t">Producto</span> papas = <span class="k">new</span> <span class="t">Producto</span>
+   { Nombre = <span class="s">"Papas Fritas"</span>, Precio = <span class="n">30</span> };
+
+<span class="t">string</span> json = <span class="t">JsonSerializer</span>.Serialize(papas);
+<span class="t">Console</span>.WriteLine(json);</pre>
+      </div>
+      <div class="card">
+        <h3>Pasos</h3>
+        <ol class="steps" style="font-size:15px;">
+          <li>Definir una clase con la estructura.</li>
+          <li>Crear una instancia con valores.</li>
+          <li>Llamar a <code>JsonSerializer.Serialize</code>.</li>
+          <li>Usar la cadena JSON resultante.</li>
+        </ol>
+        <div class="callout" style="margin-top: 12px; font-size: 14px;"><b>Salida:</b> <code>{"Nombre":"Papas Fritas","Precio":30}</code></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14. Deserializar (code) -->
+  <section class="slide" data-chapter="Serialización" data-topic="Deserializar">
+    <div class="slide-eyebrow">Serialización · Deserializar</div>
+    <h2 class="slide-title">Deserializar: JSON → objeto</h2>
+    <div class="columns" style="margin-top: 10px; grid-template-columns: 1.1fr 0.9fr; align-items: start;">
+      <div class="card">
+        <pre class="code" style="margin:0; font-size:13px; padding:12px 14px;"><span class="k">using</span> <span class="t">System.Text.Json</span>;
+
+<span class="t">string</span> json =
+   <span class="s">"{\"Nombre\":\"Papas Fritas\",\"Precio\":30}"</span>;
+
+<span class="t">Producto</span> p =
+   <span class="t">JsonSerializer</span>.Deserialize&lt;<span class="t">Producto</span>&gt;(json);
+
+<span class="t">Console</span>.WriteLine(
+   $<span class="s">"Nombre: {p.Nombre}, Precio: {p.Precio}"</span>);</pre>
+      </div>
+      <div class="card">
+        <h3>Pasos</h3>
+        <ol class="steps" style="font-size:15px;">
+          <li>Definir la <b>misma</b> clase usada al serializar.</li>
+          <li>Tener la cadena JSON (su estructura debe coincidir).</li>
+          <li>Llamar a <code>JsonSerializer.Deserialize&lt;T&gt;</code>.</li>
+          <li>Usar el objeto resultante.</li>
+        </ol>
+        <p class="small-note" style="margin-top: 10px;">Si los nombres no coinciden exacto, se usan opciones (<code>PropertyNameCaseInsensitive</code>).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15. Servicios web: concepto -->
+  <section class="slide" data-chapter="Servicios web" data-topic="¿Qué es?">
+    <div class="slide-eyebrow">Servicios web</div>
+    <h2 class="slide-title">¿Qué es un servicio web?</h2>
+    <p class="subtitle" style="max-width: 940px;">Una aplicación que <b>interactúa con otras a través de la web</b> usando estándares y protocolos abiertos, permitiendo que apps en distintos lenguajes y plataformas se comuniquen.</p>
+    <div class="callout" style="margin-top: 16px;">Estándares comunes: <b>HTTP</b>, <b>JSON</b>, XML, WSDL, UDDI.</div>
+  </section>
+
+  <!-- 16. Para qué se usan -->
+  <section class="slide" data-chapter="Servicios web" data-topic="Para qué se usan">
+    <div class="slide-eyebrow">Servicios web · Usos</div>
+    <h2 class="slide-title">¿Para qué se usan?</h2>
+    <div class="columns three" style="margin-top: 14px;">
+      <div class="card"><h3>Integración</h3><p>Conectar sistemas dentro o entre organizaciones.</p></div>
+      <div class="card"><h3>Intercambio de datos</h3><p>Comunicación entre apps web y móviles.</p></div>
+      <div class="card"><h3>Automatización</h3><p>Procesos de negocio entre servicios.</p></div>
+      <div class="card"><h3>Escalabilidad</h3><p>Microservicios y APIs flexibles.</p></div>
+      <div class="card"><h3>Acceso remoto</h3><p>Funcionalidades y datos desde cualquier lugar.</p></div>
+    </div>
+  </section>
+
+  <!-- 17. HTTP -->
+  <section class="slide" data-chapter="Servicios web" data-topic="Protocolo HTTP">
+    <div class="slide-eyebrow">Servicios web · HTTP</div>
+    <h2 class="slide-title">El protocolo HTTP</h2>
+    <p class="subtitle">Funciona con el ciclo <b>solicitud–respuesta</b>: el cliente pide algo, el servidor responde.</p>
+    <div class="card imgcard" style="margin-top: 12px;">
+      <img src="img/image24.jpeg" alt="Cliente envía request, servidor devuelve response" style="max-height: 300px;" />
+      <div class="imgcaption"><b>Request</b> (cliente → servidor) y <b>Response</b> (servidor → cliente).</div>
+    </div>
+  </section>
+
+  <!-- 18. HttpClient características -->
+  <section class="slide" data-chapter="Servicios web" data-topic="HttpClient">
+    <div class="slide-eyebrow">Servicios web · .NET</div>
+    <h2 class="slide-title">HttpClient</h2>
+    <p class="subtitle">La clase de .NET para enviar solicitudes HTTP (GET, POST, …) a un servidor.</p>
+    <div class="columns" style="margin-top: 12px;">
+      <div class="card"><h3>Asincronía</h3><p>Operaciones <code>async</code>: no bloquea el hilo principal.</p></div>
+      <div class="card"><h3>Configurable</h3><p>Encabezados, timeout, autenticación, cookies.</p></div>
+      <div class="card"><h3>Reutilizable</h3><p>Conviene reusar una sola instancia en toda la app.</p></div>
+      <div class="card"><h3>Contenidos diversos</h3><p>JSON, XML, archivos, formularios.</p></div>
+    </div>
+  </section>
+
+  <!-- 19. Consumir un servicio (code) -->
+  <section class="slide" data-chapter="Servicios web" data-topic="Consumir una API">
+    <div class="slide-eyebrow">Servicios web · Consumir</div>
+    <h2 class="slide-title">Consumir una API con HttpClient</h2>
+    <pre class="code" style="margin-top: 6px; font-size: 13px;"><span class="k">private static readonly</span> <span class="t">HttpClient</span> client = <span class="k">new</span> <span class="t">HttpClient</span>();
+
+<span class="k">private static async</span> <span class="t">Task</span> GetClima()
+{
+   <span class="t">var</span> url = <span class="s">"https://ws.smn.gob.ar/map_items/weather/"</span>;
+   <span class="t">HttpResponseMessage</span> response = <span class="k">await</span> client.GetAsync(url);
+   response.EnsureSuccessStatusCode();                       <span class="c">// 2xx o lanza excepción</span>
+
+   <span class="t">string</span> body = <span class="k">await</span> response.Content.ReadAsStringAsync();
+   <span class="t">List</span>&lt;<span class="t">Root</span>&gt; clima = <span class="t">JsonSerializer</span>.Deserialize&lt;<span class="t">List</span>&lt;<span class="t">Root</span>&gt;&gt;(body);
+
+   <span class="k">foreach</span> (<span class="t">var</span> prov <span class="k">in</span> clima)
+      <span class="t">Console</span>.WriteLine($<span class="s">"{prov.name}: {prov.weather.temp}"</span>);
+}</pre>
+    <div class="callout" style="margin-top: 14px;">La solicitud es <b>asincrónica</b>: por eso usamos <code>async</code> / <code>await</code>. Pedimos el JSON, lo leemos como texto y lo <b>deserializamos</b> a objetos C#.</div>
+  </section>
+
+  <!-- 20. Cierre -->
+  <section class="slide" data-chapter="Cierre" data-topic="Repaso y ejercicios">
+    <h2 class="slide-title">Repaso &amp; ejercicios</h2>
+    <div class="two-col-content" style="margin-top: 14px;">
+      <div class="col">
+        <h4>En una línea</h4>
+        <p class="subtitle" style="font-size: 18px; color: var(--text);">JSON es texto para intercambiar datos; con <b>JsonSerializer</b> pasás de objeto a JSON y viceversa, y con <b>HttpClient</b> consumís servicios web que devuelven JSON.</p>
+        <h4 style="margin-top: 20px;">Ejercicios</h4>
+        <ul class="bullets" style="font-size: 16px;">
+          <li>Serializar y deserializar una clase propia.</li>
+          <li>Guardar/leer el JSON desde un archivo (clase 8).</li>
+          <li>Consumir una API pública y mostrar sus datos.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h4>Bibliografía</h4>
+        <ul class="bullets" style="font-size: 15px;">
+          <li><code>System.Text.Json</code> — docs de .NET</li>
+          <li>JSON — json.org</li>
+          <li><code>HttpClient</code> — docs de .NET</li>
+        </ul>
+        <div class="callout" style="margin-top: 18px;"><b>¿Preguntas?</b></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/Spktro/slidedeck@v1/deck.js"></script>
+</body>
+</html>

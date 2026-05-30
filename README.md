@@ -10,6 +10,7 @@ Material de clases: presentaciones (slides en HTML) y proyectos de ejemplo ejecu
 | 6 | Clases (POO: miembros, métodos, visibilidad, clase estática) | [clase-06-clases](./clase-06-clases) |
 | 7 | Colecciones en C# (arreglos, genéricos, colecciones, enum) | [clase-07-colecciones](./clase-07-colecciones) |
 | 8 | Manejo de archivos (System.IO, File/Directory, streams, FileStream) | [clase-08-manejo-archivos](./clase-08-manejo-archivos) |
+| 9 | Archivos JSON (serialización con System.Text.Json, servicios web con HttpClient) | [clase-09-archivos-json](./clase-09-archivos-json) |
 
 ## Framework de presentaciones
 
