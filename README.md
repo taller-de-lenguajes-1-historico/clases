@@ -2,6 +2,8 @@
 
 Material de clases: presentaciones (slides en HTML) y proyectos de ejemplo ejecutables.
 
+[Navegación online del contenido]([https://tudominio.com](https://taller-de-lenguajes-1-historico.github.io/clases/index.html))
+
 ## Índice de clases
 
 | Clase | Tema | Material |
